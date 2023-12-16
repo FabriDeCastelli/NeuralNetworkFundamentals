@@ -1,7 +1,8 @@
-from layers.layer import Layer
-from ..metric import Metric
-from ..loss import Loss
-from ..optimizer import Optimizer
+import numpy as np
+from .layers.layer import Layer
+from src.main.metric import Metric
+from src.main.optimizer import Optimizer
+from src.main.loss import Loss
 
 
 class Model:
@@ -44,7 +45,10 @@ class Model:
                 self.train_one_step(x_batch, y_batch)
 
             if verbose and epoch % 50 == 0:
-                print(f"Epoch {epoch + 1}/{epochs} - Loss: {self.loss.evaluate(x, y)}")
+                print(f"Epoch {epoch + 1}/{epochs} - Loss: {self.evaluate(x, y)}")
+
+            for layer in self.layers:
+                print(np.linalg.norm(layer.get_weights()))
 
     def forward(self, x):
         for layer in self.layers:
@@ -62,7 +66,10 @@ class Model:
         self.forward(x)
 
     def evaluate(self, x, y):
-        y_pred = self.forward(x)
+        y_pred = x
+        for layer in self.layers:
+            y_pred = layer.forward(y_pred)
+
         return [metric.evaluate(y_pred, y) for metric in self.metrics]
 
     def train_one_step(self, x, y):
@@ -74,7 +81,7 @@ class Model:
         """
         y_pred = x
         for layer in self.layers:
-            y_pred = layer.forward(x)
+            y_pred = layer.forward(y_pred)
 
         delta = self.loss.backward(y_pred, y)
 
@@ -82,7 +89,14 @@ class Model:
             self.optimizer.update_rule(layer, delta)
             delta = layer.backward(delta)
 
-
     def summary(self):
-        # ----- Implement ------
-        pass
+        """
+        Prints a summary of the model.
+        """
+        print("Model summary:")
+        print(f"Optimizer: {self.optimizer}")
+        print(f"Loss: {self.loss}")
+        print(f"Metrics: {self.metrics}")
+        print("Layers:")
+        for layer in self.layers:
+            layer.summary()
