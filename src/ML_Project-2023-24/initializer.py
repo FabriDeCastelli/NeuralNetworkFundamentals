@@ -1,18 +1,20 @@
 import numpy as np
 
 class Initializer:
-
-    def weight_init(self, _):
+    
+    @staticmethod
+    def weight_init(*_):
         """
         Initializes weights of a layer according to a heuristic
 
         :param _: the shape of the weight matrix as number of inputs and outputs of the layer
-        :return:
+        :return: the initialized weight matrix
         """
 
         raise NotImplementedError()
 
-    def bias_init(self, _):
+    @staticmethod
+    def bias_init(*_):
         """
         Initializes biases of a layer according to a heuristic
         :param _: the number of neurons of the layer
@@ -26,10 +28,10 @@ class Random(Initializer):
     Initializes weights and biases randomly
     """
 
-    def weight_init(self, shape):
+    def weight_init(shape, *_):
         return np.random.randn(*shape)
 
-    def bias_init(self, shape):
+    def bias_init(shape):
         return np.random.randn(*shape)
 
 
@@ -38,10 +40,10 @@ class Range(Initializer):
     Initializes weights and biases randomly
     """
 
-    def weight_init(self, shape, min, max):
+    def weight_init(shape, min, max):
         return np.random.uniform(min, max, shape)
 
-    def bias_init(self, shape):
+    def bias_init(shape):
         return np.zeros(shape)
     
 
@@ -50,8 +52,8 @@ class FanIn(Initializer):
     Initializes weights and biases randomly
     """
 
-    def weight_init(self, shape):
+    def weight_init(shape, *_):
         return np.random.randn(*shape) * np.sqrt(2 / shape[0])
 
-    def bias_init(self, shape):
+    def bias_init(shape):
         return np.random.randn(*shape) * np.sqrt(2 / shape[0])
