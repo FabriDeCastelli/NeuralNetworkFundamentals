@@ -9,8 +9,6 @@ def double_Kfold_CV(dataset, k, model, grid_search):
     :param model: the model to be trained
     :param grid_search: a grid search object 
     """
-    
+  
     pass
-
-
 
