@@ -61,10 +61,6 @@ class Model:
     def predict(self, x):
         self.forward(x)
 
-    def summary(self):
-        # ----- Implement ------
-        pass
-
     def evaluate(self, x, y):
         y_pred = self.forward(x)
         return [metric.evaluate(y_pred, y) for metric in self.metrics]
@@ -83,4 +79,10 @@ class Model:
         delta = self.loss.backward(y_pred, y)
 
         for layer in reversed(self.layers):
+            self.optimizer.update_rule(layer, delta)
             delta = layer.backward(delta)
+
+
+    def summary(self):
+        # ----- Implement ------
+        pass

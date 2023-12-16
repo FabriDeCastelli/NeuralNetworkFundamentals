@@ -32,7 +32,37 @@ class Dense(Layer):
         # input before activation
         self.net = None             
         self.input = None
-
+        self.delta_w_old = np.zeros((input_size, output_size))
+        self.delta_b_old = np.zeros((output_size))
+        
+        
+    def get_weights(self):
+        return self.weights
+    
+    def get_bias(self):
+        return self.bias
+    
+    def get_input(self):
+        return self.input
+    
+    def get_detla_w_old(self):
+        return self.deltaW_old
+    
+    def get_delta_b_old(self):
+        return self.delta_b_old
+    
+    def set_delta_w_old(self, delta_w):
+        self.deltaW_old = delta_w
+        
+    def set_delta_b_old(self, delta_b):
+        self.delta_b_old = delta_b
+        
+    def set_weights(self, new_weights):
+        self.weights = new_weights
+    
+    def set_bias(self, new_bias):
+        self.bias = new_bias
+        
     def forward(self, x: np.ndarray) -> np.ndarray:
         """
         Performs a forward pass of the layer.
