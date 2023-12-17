@@ -33,6 +33,7 @@ class Activation:
         raise NotImplementedError()
 
 
+
 class ReLu(Activation):
     """
     ReLu activation function
@@ -84,7 +85,7 @@ class Sigmoid(Activation):
         return self.forward(x) * (1 - self.forward(x))
 
     def to_string(self):
-        return "Sigmoid"
+        return "sigmoid"
 
 
 class Tanh(Activation):

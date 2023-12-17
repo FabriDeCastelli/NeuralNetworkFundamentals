@@ -8,17 +8,27 @@ from src.main.loss import Loss
 class Model:
 
     def __init__(self):
+        """
+        Constructor for the model. Initializes the optimizer, the metrics and the loss to None.
+        These fields will be initialized when the model is compiled.
+        Layers can be added to the model with the add method.
+        """
         self.optimizer = None
         self.metrics = None
         self.loss = None
         self.layers = []
 
     def add(self, layer: Layer):
+        """
+        Adds a layer to the model.
+
+        :param layer: the layer to add
+        """
         self.layers.append(layer)
 
     def compile(self, optimizer: Optimizer, loss: Loss, metrics: list[Metric]):
         """
-        Prepares the model for fitting with an optimizer, a loss and some metrics.
+        Prepares the model for fitting with an optimizer, a loss and a list of metrics.
 
         :param optimizer: the optimizer to use
         :param loss: the loss to use
@@ -28,12 +38,12 @@ class Model:
         self.optimizer = optimizer
         self.metrics = metrics
 
-    def fit(self, x, y, epochs=256, batch_size=20, verbose=False):
+    def fit(self, x: np.ndarray, y: np.ndarray, epochs=256, batch_size=20, verbose=False):
         """
-        Fits the model to the data.
+        Fits the model to the data_for_testing.
 
-        :param x: the input data
-        :param y: the target data
+        :param x: the input data_for_testing
+        :param y: the target data_for_testing
         :param epochs: the number of epochs to train the model
         :param batch_size: the size of the batch to process at each epoch
         :param verbose: whether to print the progress of the training
@@ -44,40 +54,63 @@ class Model:
                 y_batch = y[batch * batch_size: (batch + 1) * batch_size]
                 self.train_one_step(x_batch, y_batch)
 
-            if verbose and epoch % 50 == 0:
+            if verbose and epoch % 49 == 0:
                 print(f"Epoch {epoch + 1}/{epochs} - Loss: {self.evaluate(x, y)}")
 
             for layer in self.layers:
                 print(np.linalg.norm(layer.get_weights()))
 
-    def forward(self, x):
+    def forward(self, x: np.ndarray) -> np.ndarray:
+        """
+        Performs a forward pass of the model, by calling the forward method of each layer.
+
+        :param x: the input data_for_testing
+        :return: the prediction of the model
+        """
         for layer in self.layers:
             x = layer.forward(x)
 
         return x
 
-    def backward(self, delta):
+    def backward(self, delta: np.ndarray) -> np.ndarray:
+        """
+        Performs a backward pass of the model, by calling the backward method of each layer.
+
+        :param delta: the error to propagate back
+        :return: the error to propagate to the previous layer
+        """
         for layer in reversed(self.layers):
             delta = layer.backward(delta)
 
         return delta
 
-    def predict(self, x):
-        self.forward(x)
+    def predict(self, x: np.ndarray) -> np.ndarray:
+        """
+        Performs a prediction on the input data_for_testing.
 
-    def evaluate(self, x, y):
-        y_pred = x
-        for layer in self.layers:
-            y_pred = layer.forward(y_pred)
+        :param x: the input data_for_testing
+        :return: the prediction of the model
+        """
+        return self.forward(x)
 
+    def evaluate(self, x: np.ndarray, y: np.ndarray) -> np.ndarray:
+        """
+        Evaluates the model on the input data_for_testing.
+
+        :param x: the input data_for_testing
+        :param y: the target data_for_testing
+        :return: the value of the loss and the metrics
+        """
+
+        y_pred = self.predict(x)
         return [metric.evaluate(y_pred, y) for metric in self.metrics]
 
-    def train_one_step(self, x, y):
+    def train_one_step(self, x: np.ndarray, y: np.ndarray) -> np.ndarray:
         """
-        Trains the model on one batch of data.
+        Trains the model on one batch of data_for_testing.
 
-        :param x: the input data
-        :param y: the target data
+        :param x: the input data_for_testing
+        :param y: the target data_for_testing
         """
         y_pred = x
         for layer in self.layers:
@@ -86,7 +119,7 @@ class Model:
         delta = self.loss.backward(y_pred, y)
 
         for layer in reversed(self.layers):
-            self.optimizer.update_rule(layer, delta)
+            self.optimizer.update_parameters(layer, delta)
             delta = layer.backward(delta)
 
     def summary(self):

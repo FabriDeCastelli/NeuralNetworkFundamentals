@@ -1,10 +1,9 @@
-
 import numpy as np
 
 
 class Layer:
     """
-    Abstract class representing a layer in a neural network.
+    Abstract class representing a layer in a Neural Network.
     """
 
     def forward(self, x: np.ndarray) -> np.ndarray:
@@ -27,6 +26,13 @@ class Layer:
         """
         raise NotImplementedError()
 
+    def summary(self):
+        """
+        Prints a string representation of the layer.
+        """
+        raise NotImplementedError()
+
+    # getters and setters
     def get_weights(self):
         """
         Returns the weights of the layer.
@@ -78,11 +84,5 @@ class Layer:
     def set_bias(self, new_bias):
         """
         Sets the bias of the layer.
-        """
-        raise NotImplementedError()
-
-    def summary(self):
-        """
-        Prints a string representation of the layer.
         """
         raise NotImplementedError()

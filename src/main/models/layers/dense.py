@@ -20,8 +20,14 @@ class Dense(Layer):
             activation: Activation,
     ):
         """
+        Constructor for the Dense layer.
+
         :param input_size: size of the input to the layer
         :param output_size: size of the output of the layer
+        :param initializer: initializer for the weights and biases
+        :param range_min: min value for the weights and biases
+        :param range_max: max value for the weights and biases
+        :param activation: activation function to use
         """
         self.input_size = input_size
         self.output_size = output_size
@@ -34,6 +40,48 @@ class Dense(Layer):
         self.delta_w_old = np.zeros((input_size, output_size))
         self.delta_b_old = np.zeros((output_size))
 
+    def forward(self, x: np.ndarray) -> np.ndarray:
+        """
+        Performs a forward pass of the layer.
+
+        :param x: input to the layer
+        :return: output of the layer
+        """
+        self.input = x
+        self.net = np.dot(x, self.weights) + self.bias
+        return self.activation.forward(self.net)
+
+    def backward(self, delta: np.ndarray) -> np.ndarray:
+        """
+        Performs a backward pass of the layer.
+        
+        :param delta: error propagated by next layer
+        :return: error to prop to the previous layer
+        """
+
+        """
+        print("delta", delta.shape)
+        print("weights", self.weights.shape)
+        print("net", self.net.shape)
+        """
+        return np.dot(delta * self.activation.backward(self.net), self.weights.T)
+
+    def summary(self):
+        """
+        Prints a summary of the layer
+        """
+        print("Dense Layer")
+        print("Input size: ", self.input_size)
+        print("Output size: ", self.output_size)
+        print("Activation: ", self.activation.to_string())
+        print("Weights: ", self.weights)
+        print("Bias: ", self.bias)
+        print("Delta W old: ", self.delta_w_old)
+        print("Delta b old: ", self.delta_b_old)
+        print("Input: ", self.input)
+        print("Net: ", self.net)
+
+    # getters and setters
     def get_weights(self):
         return self.weights
 
@@ -60,43 +108,3 @@ class Dense(Layer):
 
     def set_bias(self, new_bias):
         self.bias = new_bias
-
-    def forward(self, x: np.ndarray) -> np.ndarray:
-        """
-        Performs a forward pass of the layer.
-
-        :param x: input to the layer
-        :return: output of the layer
-        """
-        self.input = x
-        self.net = np.dot(x, self.weights) + self.bias
-        return self.activation.forward(self.net)
-
-    def backward(self, delta: np.ndarray):
-        """
-        Performs a backward pass of the layer.
-        
-        :param delta: error propagated by next layer
-        :return: error to prop to the previous layer
-        """
-
-        """print("delta", delta.shape)
-        print("weights", self.weights.shape)
-        print("net", self.net.shape)
-"""
-        return np.dot(delta * self.activation.backward(self.net), self.weights.T)
-
-    def summary(self):
-        """
-        Prints a summary of the layer
-        """
-        print("Dense Layer")
-        print("Input size: ", self.input_size)
-        print("Output size: ", self.output_size)
-        print("Activation: ", self.activation.to_string())
-        print("Weights: ", self.weights)
-        print("Bias: ", self.bias)
-        print("Delta W old: ", self.delta_w_old)
-        print("Delta b old: ", self.delta_b_old)
-        print("Input: ", self.input)
-        print("Net: ", self.net)

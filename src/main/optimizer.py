@@ -3,10 +3,13 @@ import numpy as np
 
 
 class Optimizer:
+    """
+    Abstract class representing an optimizer.
+    """
     def __init__(self):
         pass
 
-    def update_rule(self, layer: Layer, delta_w):
+    def update_parameters(self, layer: Layer, delta_w):
         """
         updating weights of a layer
         
@@ -19,15 +22,27 @@ class Optimizer:
 
 
 class SGD(Optimizer):
-    def __init__(self, momentum=0, learning_rate=0.01):
+    """
+    Stochastic gradient descent optimizer.
+    """
+    def __init__(self, learning_rate=0.01, momentum=0):
+        """
+        Constructor for the SGD optimizer.
+
+        :param momentum: the momentum term
+        :param learning_rate: the learning rate
+        """
         super().__init__()
-        self.momentum = momentum  # la var momentum sarebbe alpha del momentum
+        self.momentum = momentum
         self.learning_rate = learning_rate
 
     def get_momentum(self):
         return self.momentum
 
-    def update_rule(self, layer: Layer, delta: np.ndarray):
+    def get_learning_rate(self):
+        return self.learning_rate
+
+    def update_parameters(self, layer: Layer, delta: np.ndarray):
         """
         updating the weights of a layer
         
