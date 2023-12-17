@@ -9,12 +9,12 @@ class Optimizer:
     def __init__(self):
         pass
 
-    def update_parameters(self, layer: Layer, delta_w):
+    def update_parameters(self, layer: Layer, delta: np.ndarray):
         """
         updating weights of a layer
         
         :param layer: the layer with weights to update 
-        :param delta_w: the gradient of the loss with respect to the weights
+        :param delta: the gradient of the loss with respect to the weights
         :return: the updated weights
         """
 
@@ -69,3 +69,4 @@ class SGD(Optimizer):
         layer.set_bias(new_b)
         layer.set_delta_w_old(delta_w)
         layer.set_delta_b_old(delta_b)
+

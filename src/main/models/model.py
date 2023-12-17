@@ -54,11 +54,8 @@ class Model:
                 y_batch = y[batch * batch_size: (batch + 1) * batch_size]
                 self.train_one_step(x_batch, y_batch)
 
-            if verbose and epoch % 49 == 0:
+            if verbose and epoch % 50 == 0:
                 print(f"Epoch {epoch + 1}/{epochs} - Loss: {self.evaluate(x, y)}")
-
-            for layer in self.layers:
-                print(np.linalg.norm(layer.get_weights()))
 
     def forward(self, x: np.ndarray) -> np.ndarray:
         """
@@ -103,6 +100,8 @@ class Model:
         """
 
         y_pred = self.predict(x)
+        for a, b in zip(y_pred, y):
+            print(a, b)
         return [metric.evaluate(y_pred, y) for metric in self.metrics]
 
     def train_one_step(self, x: np.ndarray, y: np.ndarray) -> np.ndarray:

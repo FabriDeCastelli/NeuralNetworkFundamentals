@@ -15,8 +15,7 @@ class Dense(Layer):
             input_size: int,
             output_size: int,
             initializer: Initializer,
-            range_min: float,
-            range_max: float,
+            range: (float, float),
             activation: Activation,
     ):
         """
@@ -25,13 +24,12 @@ class Dense(Layer):
         :param input_size: size of the input to the layer
         :param output_size: size of the output of the layer
         :param initializer: initializer for the weights and biases
-        :param range_min: min value for the weights and biases
-        :param range_max: max value for the weights and biases
+        :param range: range for the weights and biases
         :param activation: activation function to use
         """
         self.input_size = input_size
         self.output_size = output_size
-        self.weights = initializer.weight_init((input_size, output_size), range_min, range_max)
+        self.weights = initializer.weight_init((input_size, output_size), range)
         self.bias = initializer.bias_init((output_size,))
         self.activation = activation
         # input before activation

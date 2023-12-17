@@ -44,7 +44,9 @@ class Range(Initializer):
     """
 
     @staticmethod
-    def weight_init(shape, min, max):
+    def weight_init(shape, range: (float, float)):
+        min = range[0]
+        max = range[1]
         return np.random.uniform(min, max, shape)
 
     @staticmethod

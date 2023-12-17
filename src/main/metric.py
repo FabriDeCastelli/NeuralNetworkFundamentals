@@ -31,3 +31,15 @@ class RootMeanSquaredError(Metric):
 
     def evaluate(self, y_pred, y_true):
         return np.sqrt(np.mean((y_pred - y_true) ** 2))
+
+
+class Accuracy(Metric):
+    """
+    Accuracy evaluation metric
+    """
+
+    def __init__(self):
+        super().__init__()
+
+    def evaluate(self, y_pred, y_true):
+        return np.mean(np.argmax(y_pred, axis=1) == np.argmax(y_true, axis=1))

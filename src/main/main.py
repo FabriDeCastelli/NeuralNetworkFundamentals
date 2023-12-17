@@ -1,59 +1,56 @@
 import numpy as np
 from sklearn.model_selection import train_test_split
 
-from dataset_handler import get_cup_training_set
+from dataset_handler import get_cup_training_set, get_monk
 from models.layers.dense import Dense
 from models.model import Model
 from initializer import Random
 from activation import ReLu, Identity, Sigmoid
 from optimizer import SGD
 from loss import MSE
-from metric import RootMeanSquaredError
-import sys
+from metric import Accuracy
 
-print(sys.path)
+# x_train, y_train, x_test = get_cup_training_set()
+x_train, y_train, x_test, y_test = get_monk(1)
 
-x_train, y_train = get_cup_training_set()
-
-x_train, x_test = train_test_split(x_train, test_size=0.2, random_state=42)
-y_train, y_test = train_test_split(y_train, test_size=0.2, random_state=42)
-
-"""
-data_for_testing = np.load("../../data_for_testing/y=2x/training.npy")
-labels = np.load("../../data_for_testing/y=2x/labels.npy")
-
-x_train = data_for_testing[:80, :]
-x_test = data_for_testing[80:, :]
-
-y_train = labels[:80, :]
-y_test = labels[80:, :]
-"""
-
-print(x_train.shape)
-print(y_train.shape)
 
 initializer = Random()
 relu = ReLu()
 identity = Identity()
 sigmoid = Sigmoid()
-sgd = SGD(learning_rate=0.01, momentum=0)
+sgd = SGD(learning_rate=0.9)
 loss = MSE()
-metrics = [RootMeanSquaredError()]
+metrics = [Accuracy()]
 
+range = (-0.2, 0.2)
 
 model = Model()
-model.add(Dense(10, 32, initializer, -0.1, 0.1, relu))
-model.add(Dense(32, 16, initializer, -0.1, 0.1, relu))
-model.add(Dense(16, 3, initializer, -0.1, 0.1, identity))
+model.add(Dense(17, 4, initializer, range, sigmoid))
+model.add(Dense(4, 2, initializer, range, sigmoid))
 
 model.compile(sgd, loss, metrics)
 
 # model.summary()
 
-model.fit(x_train, y_train, 1001, 20, True)
+model.fit(x_train, y_train, 500, 20, False)
 
 errors = model.evaluate(x_test, y_test)
 
 print(errors)
 
+from keras.models import Sequential
+from keras.layers import Dense
+
+model = Sequential()
+model.add(Dense(17, input_dim=17, activation='sigmoid'))
+model.add(Dense(4, activation='sigmoid'))
+model.add(Dense(2, activation='sigmoid'))
+
+model.compile(loss='mean_squared_error', optimizer='sgd', metrics=['accuracy'])
+
+model.fit(x_train, y_train, epochs=500, batch_size=20, verbose=0)
+
+errors = model.evaluate(x_test, y_test)
+
+print(errors)
 
