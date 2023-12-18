@@ -18,6 +18,9 @@ class Model:
         self.loss = None
         self.layers = []
 
+    def get_metrics(self):
+        return self.metrics
+
     def add(self, layer: Layer):
         """
         Adds a layer to the model.
@@ -101,10 +104,10 @@ class Model:
 
         y_pred = self.predict(x)
         
-        model_score = {"loss": -1, "RMSE": -1}
+        model_score = {}
         
         for metric in self.metrics:
-            model_score[metric.to_string] = metric.evaluate(y_pred, y)
+            model_score[metric.to_string()] = metric.evaluate(y_pred, y)
         
         model_score["loss"] = self.loss.forward(y_pred, y)
 
