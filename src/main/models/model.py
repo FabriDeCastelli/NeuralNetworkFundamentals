@@ -18,9 +18,6 @@ class Model:
         self.loss = None
         self.layers = []
 
-    def get_metrics(self):
-        return self.metrics
-
     def add(self, layer: Layer):
         """
         Adds a layer to the model.

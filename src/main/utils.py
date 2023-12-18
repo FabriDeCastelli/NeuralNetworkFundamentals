@@ -4,7 +4,7 @@ from typing import Any
 import yaml
 import numpy as np
 
-from config.config import HPARAMS_ROOT
+from config.config import HPARAMS_ROOT, PROJECT_FOLDER_PATH
 from src.main.activation import activation_dict
 from src.main.initializer import initializer_dict
 from src.main.loss import loss_dict
@@ -95,3 +95,38 @@ def mean_std_scores(scores):
         std_score[keys] = np.array(result_dict[keys]).std()
 
     return mean_score, std_score
+    
+    
+def compute_metrics(results):
+    #to be implemented
+    pass
+    
+    
+#LA CHIAMA IL JUPYTER!!!!
+def log_experiment(exp_dir, results):
+    """Logs the results of an experiments on a csv file
+    
+    :param exp_dir: the directory where the results will be saved
+    :param results: the results as list of dictionary
+    """
+    metrics = compute_metrics(results)
+    metrics.to_csv(exp_dir / "metrics.csv", index=False, decimal=',')
+    
+def setup_experiment(name: str) -> Path:
+    """Initializes experiment by creating the proper directory
+    :param name: the name of the experiment
+    
+    :return: the path of the experiment directory
+    """
+    
+    root = PROJECT_FOLDER_PATH / "experiments"
+    exp_dir = root / name
+    exp_dir.mkdir(exist_ok=True, parents=True)
+    return exp_dir
+
+        
+
+    
+    
+    
+    
