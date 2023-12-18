@@ -10,6 +10,18 @@ from optimizer import SGD
 from loss import MSE
 from metric import Accuracy
 
+
+import sys
+import os
+
+current_dir =  os.getcwd()
+
+# Detect the parent directory dynamically
+parent_dir = os.path.abspath(os.path.join(current_dir, '..'))
+sys.path.append(parent_dir)
+
+
+
 # x_train, y_train, x_test = get_cup_training_set()
 x_train, y_train, x_test, y_test = get_monk(1)
 

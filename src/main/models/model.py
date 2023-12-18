@@ -100,9 +100,15 @@ class Model:
         """
 
         y_pred = self.predict(x)
-        for a, b in zip(y_pred, y):
-            print(a, b)
-        return [metric.evaluate(y_pred, y) for metric in self.metrics]
+        
+        model_score = {"loss": -1, "RMSE": -1}
+        
+        for metric in self.metrics:
+            model_score[metric.to_string] = metric.evaluate(y_pred, y)
+        
+        model_score["loss"] = self.loss.forward(y_pred, y)
+
+        return model_score 
 
     def train_one_step(self, x: np.ndarray, y: np.ndarray) -> np.ndarray:
         """

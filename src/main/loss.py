@@ -47,6 +47,9 @@ class MSE(Loss):
 
     def backward(self, y_pred, y_true):
         return 2 * (y_pred - y_true) / y_true.size
+    
+    def to_string(self):
+        return "MSE"
 
 
 class MEE(Loss):
@@ -62,3 +65,6 @@ class MEE(Loss):
 
     def backward(self, y_pred, y_true):
         return y_pred - y_true / y_pred.shape[0]
+    
+    def to_string(self):
+        return "MEE"

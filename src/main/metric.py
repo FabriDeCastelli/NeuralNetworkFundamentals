@@ -31,6 +31,9 @@ class RootMeanSquaredError(Metric):
 
     def evaluate(self, y_pred, y_true):
         return np.sqrt(np.mean((y_pred - y_true) ** 2))
+    
+    def to_string(self):
+        return "RMSE"
 
 
 class Accuracy(Metric):
@@ -43,3 +46,6 @@ class Accuracy(Metric):
 
     def evaluate(self, y_pred, y_true):
         return np.mean(np.argmax(y_pred, axis=1) == np.argmax(y_true, axis=1))
+    
+    def to_string(self):
+        return "Accuracy"
