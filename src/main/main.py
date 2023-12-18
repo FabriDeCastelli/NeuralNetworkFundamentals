@@ -9,6 +9,13 @@ from evaluation.grid_search import RandomGridSearch
 from initializer import Random
 from src.main.utils import load_hparams
 
+
+import sys
+import os
+
+
+
+# x_train, y_train, x_test = get_cup_training_set()
 x_train, y_train, x_test, y_test = get_monk(1)
 
 initializer = Random()
