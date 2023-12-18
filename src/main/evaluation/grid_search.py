@@ -74,9 +74,11 @@ class GridSearch:
         assert parameters_combination
 
         def run(parameters, verbose):
-            print(f"Running with parameters: {parameters}")
+            # print(f"Running with parameters: {parameters}")
             model = create_model(**parameters)
-            return Kfold_CV(x, y, model, k=5, verbose=verbose, **parameters), model
+            batch_size = parameters['batch_size']
+            epochs = parameters['epochs']
+            return Kfold_CV(x, y, model, 5, epochs, batch_size, verbose), model
 
         results = Parallel(n_jobs=os.cpu_count())(
             delayed(run)(parameters, verbose) for parameters in parameters_combination
@@ -87,9 +89,10 @@ class GridSearch:
         best_val_loss = np.inf
 
         for result, model in results:
-            mean_val = result[2]['loss']
+            print(result[1][0])
+            mean_val = result[1][0]['loss']
             if mean_val < best_val_loss:
-                best_val_loss = mean_val['loss']
+                best_val_loss = mean_val
                 best_scores = result
                 best_model = model
 

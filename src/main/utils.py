@@ -56,16 +56,20 @@ def create_model(
 ):
     assert len(units) - 1 == len(activations)
     model = Model()
+    initializer = initializer_dict.get(initializer)
     for i in range(len(units) - 1):
         activation = activation_dict.get(activations[i])
-        initializer = initializer_dict.get(initializer)
-        print(initializer)
         model.add(Dense(units[i], units[i + 1], initializer, (-0.7, 0.7), activation))
 
     sgd = SGD(learning_rate, momentum)
     loss = loss_dict.get(loss)
-    metrics = [metrics_dict.get(metric) for metric in metrics]
-    model.compile(sgd, loss, metrics)
+    print(metrics)
+    metrics_object = []
+    for metric in metrics:
+        metrics_object.append(metrics_dict.get(metric))
+    print(metrics_object)
+    model.compile(sgd, loss, metrics_object)
+    return model
 
 
 def initialize_score(model):  # FORSE INUTILE(?)
