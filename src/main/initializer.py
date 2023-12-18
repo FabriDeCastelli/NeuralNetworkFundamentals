@@ -4,7 +4,7 @@ import numpy as np
 class Initializer:
 
     @staticmethod
-    def weight_init(*_):
+    def weight_init(**kwargs):
         """
         Initializes weights of a layer according to a heuristic
 
@@ -15,7 +15,7 @@ class Initializer:
         raise NotImplementedError()
 
     @staticmethod
-    def bias_init(*_):
+    def bias_init(**kwargs):
         """
         Initializes biases of a layer according to a heuristic
 
@@ -29,12 +29,10 @@ class Random(Initializer):
     Initializes weights and biases randomly
     """
 
-    @staticmethod
-    def weight_init(shape, *_):
+    def weight_init(self, shape, **kwargs):
         return np.random.randn(*shape)
 
-    @staticmethod
-    def bias_init(shape):
+    def bias_init(self, shape):
         return np.random.randn(*shape)
 
 
@@ -60,9 +58,16 @@ class FanIn(Initializer):
     """
 
     @staticmethod
-    def weight_init(shape, *_):
+    def weight_init(shape, **kwargs):
         return np.random.randn(*shape) * np.sqrt(2 / shape[0])
 
     @staticmethod
     def bias_init(shape):
         return np.random.randn(*shape) * np.sqrt(2 / shape[0])
+
+
+initializer_dict = {
+    "random": Random(),
+    "range": Range,
+    "fan_in": FanIn
+}

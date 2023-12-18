@@ -12,12 +12,12 @@ def get_cup_training_set() -> (np.ndarray, np.ndarray, np.ndarray):
     :return: the training set as a numpy array
     """
 
-    data = np.genfromtxt(ml_cup_path + "/training.csv", delimiter=';', skip_header=1)[:, 1:]
+    data = np.genfromtxt(ML_CUP_PATH + "/training.csv", delimiter=';', skip_header=1)[:, 1:]
 
     x_train = data[:, :-3]
     y_train = data[:, -3:]
 
-    x_test = np.genfromtxt(ml_cup_path + "/test.csv", delimiter=';', skip_header=1)[:, 1:]
+    x_test = np.genfromtxt(ML_CUP_PATH + "/test.csv", delimiter=';', skip_header=1)[:, 1:]
 
     assert x_train.shape[1] == x_test.shape[1]
 
@@ -31,8 +31,8 @@ def get_monk(number: int) -> (np.ndarray, np.ndarray, np.ndarray, np.ndarray):
     :param number: the number of the monk benchmark to read
     :return: the training and test set together with their labels as numpy arrays
     """
-    training_set_path = monk_benchmark_path.format(number) + "/monks-{}.train".format(number)
-    test_set_path = monk_benchmark_path.format(number) + "/monks-{}.test".format(number)
+    training_set_path = MONK_BENCHMARK_PATH.format(number) + "/monks-{}.train".format(number)
+    test_set_path = MONK_BENCHMARK_PATH.format(number) + "/monks-{}.test".format(number)
 
     col_names = ['class', 'a1', 'a2', 'a3', 'a4', 'a5', 'a6', 'Id']
 

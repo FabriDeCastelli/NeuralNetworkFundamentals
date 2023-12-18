@@ -68,3 +68,9 @@ class MEE(Loss):
     
     def to_string(self):
         return "MEE"
+
+
+loss_dict = {
+    "MSE": MSE(),
+    "MEE": MEE()
+}

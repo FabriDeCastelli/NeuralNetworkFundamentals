@@ -104,3 +104,11 @@ class Tanh(Activation):
 
     def to_string(self):
         return "Tanh"
+
+
+activation_dict = {
+    "relu": ReLu(),
+    "identity": Identity(),
+    "sigmoid": Sigmoid(),
+    "tanh": Tanh()
+}

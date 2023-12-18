@@ -49,3 +49,9 @@ class Accuracy(Metric):
     
     def to_string(self):
         return "Accuracy"
+
+
+metrics_dict = {
+    "RMSE": RootMeanSquaredError(),
+    "Accuracy": Accuracy()
+}

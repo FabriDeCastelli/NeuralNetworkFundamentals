@@ -1,30 +1,15 @@
-import numpy as np
-from sklearn.model_selection import train_test_split
-
-from dataset_handler import get_cup_training_set, get_monk
+from dataset_handler import get_monk
 from models.layers.dense import Dense
 from models.model import Model
-from initializer import Random
 from activation import ReLu, Identity, Sigmoid
 from optimizer import SGD
 from loss import MSE
 from metric import Accuracy
+from evaluation.grid_search import RandomGridSearch
+from initializer import Random
+from src.main.utils import load_hparams
 
-
-import sys
-import os
-
-current_dir =  os.getcwd()
-
-# Detect the parent directory dynamically
-parent_dir = os.path.abspath(os.path.join(current_dir, '..'))
-sys.path.append(parent_dir)
-
-
-
-# x_train, y_train, x_test = get_cup_training_set()
 x_train, y_train, x_test, y_test = get_monk(1)
-
 
 initializer = Random()
 relu = ReLu()
@@ -43,13 +28,21 @@ model.add(Dense(4, 2, initializer, range, sigmoid))
 model.compile(sgd, loss, metrics)
 
 # model.summary()
+"""
 
 model.fit(x_train, y_train, 500, 20, False)
 
 errors = model.evaluate(x_test, y_test)
 
 print(errors)
+"""
 
+params = load_hparams("nn")
+grid_search = RandomGridSearch(params)
+res = grid_search.run_search(x_train, y_train, True)
+
+
+"""
 from keras.models import Sequential
 from keras.layers import Dense
 
@@ -64,5 +57,4 @@ model.fit(x_train, y_train, epochs=500, batch_size=20, verbose=0)
 
 errors = model.evaluate(x_test, y_test)
 
-print(errors)
-
+print(errors)"""

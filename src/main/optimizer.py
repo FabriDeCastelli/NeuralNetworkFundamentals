@@ -1,4 +1,4 @@
-from models.layers.layer import Layer
+from src.main.models.layers.layer import Layer
 import numpy as np
 
 
@@ -70,3 +70,7 @@ class SGD(Optimizer):
         layer.set_delta_w_old(delta_w)
         layer.set_delta_b_old(delta_b)
 
+
+optimizer_dict = {
+    "SGD": SGD()
+}
