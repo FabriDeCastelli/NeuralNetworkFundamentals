@@ -68,16 +68,11 @@ class Dense(Layer):
         """
         Prints a summary of the layer
         """
-        print("Dense Layer")
+        print("-------- Dense Layer --------")
         print("Input size: ", self.input_size)
         print("Output size: ", self.output_size)
         print("Activation: ", self.activation.to_string())
-        print("Weights: ", self.weights)
-        print("Bias: ", self.bias)
-        print("Delta W old: ", self.delta_w_old)
-        print("Delta b old: ", self.delta_b_old)
-        print("Input: ", self.input)
-        print("Net: ", self.net)
+        print("Parameters: ", self.weights.shape[0] * self.weights.shape[1] + self.bias.shape[0])
 
     # getters and setters
     def get_weights(self):

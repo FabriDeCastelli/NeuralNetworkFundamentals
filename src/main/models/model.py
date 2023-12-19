@@ -112,10 +112,10 @@ class Model:
 
     def train_one_step(self, x: np.ndarray, y: np.ndarray) -> np.ndarray:
         """
-        Trains the model on one batch of data_for_testing.
+        Trains the model on one batch of data.
 
-        :param x: the input data_for_testing
-        :param y: the target data_for_testing
+        :param x: the input data
+        :param y: the target data
         """
         y_pred = x
         for layer in self.layers:
@@ -131,10 +131,11 @@ class Model:
         """
         Prints a summary of the model.
         """
-        print("Model summary:")
-        print(f"Optimizer: {self.optimizer}")
-        print(f"Loss: {self.loss}")
-        print(f"Metrics: {self.metrics}")
-        print("Layers:")
+        print("\nModel Summary:")
+        print(f"Optimizer: {self.optimizer.to_string()}")
+        print(f"Loss: {self.loss.to_string()}")
+        print(f"Metrics: {list(map(lambda x: x.to_string(), self.metrics))}")
+        print(" ")
         for layer in self.layers:
             layer.summary()
+        print(" ")

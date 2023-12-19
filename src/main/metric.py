@@ -9,6 +9,9 @@ class Metric:
     def __init__(self):
         pass
 
+    def to_string(self):
+        raise NotImplementedError()
+
     def evaluate(self, y_pred, y_true):
         """
         computes the error of the prediction.
@@ -33,7 +36,7 @@ class RootMeanSquaredError(Metric):
         return np.sqrt(np.mean((y_pred - y_true) ** 2))
     
     def to_string(self):
-        return "RMSE"
+        return "Root Mean Squared Error"
 
 
 class Accuracy(Metric):

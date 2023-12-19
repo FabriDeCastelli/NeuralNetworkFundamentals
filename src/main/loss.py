@@ -9,6 +9,9 @@ class Loss:
     def __init__(self):
         pass
 
+    def to_string(self):
+        raise NotImplementedError()
+
     def forward(self, y_pred, y_true):
         """
         computes the error of the prediction
@@ -42,6 +45,9 @@ class MSE(Loss):
     def __init__(self):
         super().__init__()
 
+    def to_string(self):
+        return "Mean Squared Error"
+
     def forward(self, y_pred, y_true):
         return np.mean((y_pred - y_true) ** 2)
 
@@ -59,6 +65,9 @@ class MEE(Loss):
 
     def __init__(self):
         super().__init__()
+
+    def to_string(self):
+        return "Mean Euclidean Error"
 
     def forward(self, y_pred, y_true):
         return np.mean(np.linalg.norm(y_pred - y_true, axis=1))

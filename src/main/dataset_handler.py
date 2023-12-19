@@ -5,7 +5,7 @@ from sklearn.preprocessing import OneHotEncoder
 from config.config import *
 
 
-def get_cup_training_set() -> (np.ndarray, np.ndarray, np.ndarray):
+def get_cup_dataset() -> (np.ndarray, np.ndarray, np.ndarray):
     """
     Reads the training set from the csv file and returns it as a numpy array
 

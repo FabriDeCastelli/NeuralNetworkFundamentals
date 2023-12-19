@@ -6,6 +6,7 @@ class Optimizer:
     """
     Abstract class representing an optimizer.
     """
+
     def __init__(self):
         pass
 
@@ -20,11 +21,15 @@ class Optimizer:
 
         raise NotImplementedError()
 
+    def to_string(self):
+        raise NotImplementedError()
+
 
 class SGD(Optimizer):
     """
     Stochastic gradient descent optimizer.
     """
+
     def __init__(self, learning_rate=0.01, momentum=0):
         """
         Constructor for the SGD optimizer.
@@ -33,8 +38,11 @@ class SGD(Optimizer):
         :param learning_rate: the learning rate
         """
         super().__init__()
-        self.momentum = momentum
         self.learning_rate = learning_rate
+        self.momentum = momentum
+
+    def to_string(self):
+        return "Stochastic Gradient Descent"
 
     def get_momentum(self):
         return self.momentum
@@ -50,14 +58,10 @@ class SGD(Optimizer):
         :param delta: the error backpropagated from the next layer
         """
 
-        delta_w = np.dot(layer.get_input().T, delta)
-        delta_b = delta.sum(axis=0)
+        batch_size = delta.shape[0]
 
-        """
-        print("--------------------")
-        print("delta_w", delta_w)
-        print("delta_b", delta_b)
-        """
+        delta_w = np.dot(layer.get_input().T, delta) / batch_size
+        delta_b = delta.sum(axis=0) / batch_size
 
         delta_w = - self.learning_rate * delta_w + self.momentum * layer.get_delta_w_old()
         delta_b = - self.learning_rate * delta_b + self.momentum * layer.get_delta_b_old()
