@@ -65,11 +65,11 @@ def create_model(
 
     sgd = SGD(learning_rate, momentum)
     loss = loss_dict.get(loss)
-    #print(metrics)
+
     metrics_object = []
     for metric in metrics:
         metrics_object.append(metrics_dict.get(metric))
-    #print(metrics_object)
+
     model.compile(sgd, loss, metrics_object)
     return model
 
@@ -97,14 +97,14 @@ def mean_std_scores(scores):
         std_score[keys] = np.array(result_dict[keys]).std()
 
     return mean_score, std_score
-    
-    
+
+
 def compute_metrics(results):
-    #to be implemented
+    # TODO: implement
     pass
-    
-    
-#LA CHIAMA IL JUPYTER!!!!
+
+
+# LA CHIAMA IL JUPYTER!!!!
 def log_experiment(exp_dir, results):
     """Logs the results of an experiments on a csv file
     
@@ -113,22 +113,16 @@ def log_experiment(exp_dir, results):
     """
     metrics = compute_metrics(results)
     metrics.to_csv(exp_dir / "metrics.csv", index=False, decimal=',')
-    
+
+
 def setup_experiment(name: str) -> Path:
     """Initializes experiment by creating the proper directory
     :param name: the name of the experiment
     
     :return: the path of the experiment directory
     """
-    
+
     root = PROJECT_FOLDER_PATH / "experiments"
     exp_dir = root / name
     exp_dir.mkdir(exist_ok=True, parents=True)
     return exp_dir
-
-        
-
-    
-    
-    
-    

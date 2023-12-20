@@ -1,4 +1,3 @@
-import os
 import numpy as np
 from joblib import Parallel, delayed
 from src.main.utils import load_hparams, create_model
@@ -80,7 +79,7 @@ class GridSearch:
             epochs = parameters['epochs']
             return Kfold_CV(x, y, model, 5, epochs, batch_size, verbose), model
 
-        results = Parallel(n_jobs=os.cpu_count())(
+        results = Parallel(n_jobs=-1)(
             delayed(run)(parameters, verbose) for parameters in parameters_combination
         )
 
@@ -89,15 +88,15 @@ class GridSearch:
         best_val_loss = np.inf
 
         for result, model in results:
-            #print(result[1][0])
+            # print(result[1][0])
             mean_val = result[1][0]['loss']
             if mean_val < best_val_loss:
                 best_val_loss = mean_val
                 best_scores = result
                 best_model = model
 
-        #print(f"Best model: {best_model.summary()}")
-        #print(f"Best score: {best_val_loss}")
+        # print(f"Best model: {best_model.summary()}")
+        # print(f"Best score: {best_val_loss}")
         return best_scores, best_model
 
 
@@ -157,4 +156,4 @@ if __name__ == '__main__':
     params = load_hparams("nn")
     grid_search = RandomGridSearch(params)
     grid_search.run_search(None, None, None)
-    #print(grid_search.get_parameters_combination(2))
+    # print(grid_search.get_parameters_combination(2))

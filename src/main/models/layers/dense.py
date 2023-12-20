@@ -44,7 +44,10 @@ class Dense(Layer):
             if bias_initializer is None:
                 raise ValueError("Invalid bias initializer")
 
+        self.weights_initializer = weight_initializer
         self.weights = weight_initializer((input_size, output_size))
+
+        self.bias_initializer = bias_initializer
         self.bias = bias_initializer((output_size,))
 
         if isinstance(activation, str):
@@ -90,6 +93,8 @@ class Dense(Layer):
         print("-------- Dense Layer --------")
         print("Input size: ", self.input_size)
         print("Output size: ", self.output_size)
+        print("Weights initializer: ", repr(self.weights_initializer))
+        print("Bias initializer: ", repr(self.bias_initializer))
         print("Activation: ", self.activation.to_string())
         print("Parameters: ", self.weights.shape[0] * self.weights.shape[1] + self.bias.shape[0])
 

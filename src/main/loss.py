@@ -76,8 +76,24 @@ class CrossEntropy(Loss):
         return "Cross Entropy"
 
 
+class BinaryCrossEntropy(Loss):
+    """
+    Binary Cross Entropy loss function
+    """
+
+    def forward(self, y_pred, y_true):
+        return np.mean(-np.sum(y_true * np.log(y_pred) + (1 - y_true) * np.log(1 - y_pred), axis=1))
+
+    def backward(self, y_pred, y_true):
+        return y_pred - y_true / y_pred.shape[0]
+
+    def to_string(self):
+        return "Binary Cross Entropy"
+
+
 loss_dict = {
     "mean_squared_error": MSE(),
     "mean_euclidean_error": MEE(),
-    "cross_entropy": CrossEntropy()
+    "cross_entropy": CrossEntropy(),
+    "binary_cross_entropy": BinaryCrossEntropy()
 }
