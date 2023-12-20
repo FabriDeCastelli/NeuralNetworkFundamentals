@@ -33,11 +33,6 @@ def double_Kfold_CV(X, y, grid_search, k = 5, verbose = False ):
         """train_mean, train_std, val_mean, val_std,""" 
         ((train_mean, train_std), (val_mean, val_std)), model = grid_search.run_search(x_train, y_train, verbose)
         
-        print(f"Train mean: {train_mean}")
-        print(f"Train std: {train_std}")
-        print(f"Val mean: {val_mean}")
-        print(f"Val std: {val_std}")
-        
         model.fit(x_train, y_train, False)
         
         test_scores.append(model.evaluate(x_test, y_test))
