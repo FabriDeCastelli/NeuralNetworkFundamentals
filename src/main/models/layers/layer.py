@@ -57,25 +57,25 @@ class Layer:
         """
         raise NotImplementedError()
 
-    def get_delta_w_old(self):
-        """
-        Returns the delta_w_old of the layer.
-        """
-        raise NotImplementedError()
-
-    def get_delta_b_old(self):
+    def get_dW(self):
         """
         Returns the delta_b_old of the layer.
         """
         raise NotImplementedError()
 
-    def set_delta_w_old(self, delta_w):
+    def get_db(self):
+        """
+        Returns the delta_w_old of the layer.
+        """
+        raise NotImplementedError()
+
+    def set_dW(self, dW):
         """
         Sets the delta_w_old of the layer.
         """
         raise NotImplementedError()
 
-    def set_delta_b_old(self, delta_b):
+    def set_db(self, db):
         """
         Sets the delta_b_old of the layer.
         """

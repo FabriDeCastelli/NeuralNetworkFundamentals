@@ -1,6 +1,8 @@
 from src.main.models.layers.layer import Layer
 import numpy as np
 
+from src.main.regularizer import Regularizer
+
 
 class Optimizer:
     """
@@ -10,12 +12,12 @@ class Optimizer:
     def __init__(self):
         pass
 
-    def update_parameters(self, layer: Layer):
+    def update_parameters(self, layer: Layer, regularizer: Regularizer = None):
         """
         updating weights of a layer
         
         :param layer: the layer with weights to update 
-        :param delta: the gradient of the loss with respect to the weights
+        :param regularizer: the regularizer to use
         :return: the updated weights
         """
 
@@ -23,7 +25,7 @@ class Optimizer:
 
     def to_string(self):
         raise NotImplementedError()
-    
+
     def get_learning_rate(self):
         raise NotImplementedError()
 
@@ -51,29 +53,37 @@ class SGD(Optimizer):
                 + f"\nMomentum: {self.momentum}"
         )
 
-
     def get_momentum(self):
         return self.momentum
 
     def get_learning_rate(self):
         return self.learning_rate
 
-    def update_parameters(self, layer: Layer):
+    def update_parameters(self, layer: Layer, regularizer: Regularizer = None):
         """
         updating the weights of a layer
         
-        :param layer: the layer with weights to update 
-        :param delta: the error backpropagated from the next layer
+        :param layer: the layer with weights to update
+        :param regularizer: the regularizer to use
         """
 
         delta = layer.get_delta()
         batch_size = delta.shape[0]
 
-        delta_w = - self.learning_rate / batch_size * np.dot(layer.get_input().T, delta)
-        delta_b = - self.learning_rate / batch_size * delta.sum(axis=0)
+        dW = self.learning_rate * np.dot(layer.get_input().T, delta) / batch_size
+        db = self.learning_rate * delta.sum(axis=0) / batch_size
 
-        new_weights = layer.get_weights() + delta_w
-        new_b = layer.get_bias() + delta_b
+        if regularizer is not None:
+            dW += regularizer.backward(layer.get_weights())
+
+        if self.momentum > 0:
+            dW += self.momentum * layer.get_dW()
+            db += self.momentum * layer.get_db()
+            layer.set_dW(dW)
+            layer.set_db(db)
+
+        new_weights = layer.get_weights() - dW
+        new_b = layer.get_bias() - db
 
         layer.set_weights(new_weights)
         layer.set_bias(new_b)

@@ -58,8 +58,8 @@ class Dense(Layer):
         self.input = None
         self.output = None
         self.delta = None
-        self.delta_w_old = np.zeros((input_size, output_size))
-        self.delta_b_old = np.zeros(output_size)
+        self.dW = np.zeros((input_size, output_size))
+        self.db = np.zeros(output_size)
 
     def forward(self, x: np.ndarray) -> np.ndarray:
         """
@@ -79,7 +79,7 @@ class Dense(Layer):
         :param delta: error propagated by next layer
         :return: error to propagate to the previous layer
         """
-        
+
         self.delta = delta * self.activation.backward(self.output)
         return self.delta.dot(self.weights.T)
 
@@ -103,23 +103,24 @@ class Dense(Layer):
     def get_input(self):
         return self.input
 
-    def get_delta_w_old(self):
-        return self.delta_w_old
-
     def get_delta(self):
         return self.delta
 
-    def get_delta_b_old(self):
-        return self.delta_b_old
+    def get_dW(self):
+        return self.dW
 
-    def set_delta_w_old(self, delta_w):
-        self.delta_w_old = delta_w
+    def get_db(self):
+        return self.db
 
-    def set_delta_b_old(self, delta_b):
-        self.delta_b_old = delta_b
+    def set_dW(self, dW):
+        self.dW = dW
+
+    def set_db(self, db):
+        self.db = db
 
     def set_weights(self, new_weights):
         self.weights = new_weights
 
     def set_bias(self, new_bias):
         self.bias = new_bias
+

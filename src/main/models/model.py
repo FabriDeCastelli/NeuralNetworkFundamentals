@@ -3,6 +3,7 @@ from .layers.layer import Layer
 from src.main.metric import Metric, metrics_dict
 from src.main.optimizer import Optimizer, optimizer_dict
 from src.main.loss import Loss, loss_dict
+from src.main.regularizer import Regularizer, regularizer_dict
 
 
 class Model:
@@ -16,6 +17,7 @@ class Model:
         self.optimizer = None
         self.metrics = None
         self.loss = None
+        self.regularizer = None
         self.layers = []
 
     def add(self, layer: Layer):
@@ -30,7 +32,8 @@ class Model:
             self,
             optimizer: str | Optimizer,
             loss: str | Loss,
-            metrics: list[str | Metric]
+            metrics: list[str | Metric],
+            regularizer: str | Regularizer = None,
     ):
         """
         Prepares the model for fitting with an optimizer, a loss and a list of metrics.
@@ -38,6 +41,7 @@ class Model:
         :param optimizer: the optimizer to use
         :param loss: the loss to use
         :param metrics: the list of metrics to use
+        :param regularizer: the regularizer to use
         """
         if isinstance(optimizer, str):
             optimizer = optimizer_dict.get(optimizer)
@@ -54,9 +58,16 @@ class Model:
 
         metrics = list(map(lambda x: metrics_dict.get(x) if isinstance(x, str) else x, metrics))
 
+        if regularizer is not None:
+            if isinstance(regularizer, str):
+                regularizer = regularizer_dict.get(regularizer)
+                if regularizer is None:
+                    raise ValueError("Invalid regularizer")
+
         self.optimizer = optimizer
         self.loss = loss
         self.metrics = metrics
+        self.regularizer = regularizer
 
     def fit(self, x: np.ndarray, y: np.ndarray, epochs=256, batch_size=20, verbose=False):
         """
@@ -70,8 +81,15 @@ class Model:
         """
         for epoch in range(epochs):
             for batch in range(len(x) // batch_size):
+
                 x_batch = x[batch * batch_size: (batch + 1) * batch_size]
                 y_batch = y[batch * batch_size: (batch + 1) * batch_size]
+
+                # shuffle the data
+                idx = np.random.permutation(len(x_batch))
+                x_batch = x_batch[idx]
+                y_batch = y_batch[idx]
+
                 self.train_one_step(x_batch, y_batch)
 
             if verbose and epoch % 50 == 0:
@@ -96,7 +114,7 @@ class Model:
 
         # Update Parameters
         for layer in reversed(self.layers):
-            self.optimizer.update_parameters(layer)
+            self.optimizer.update_parameters(layer, self.regularizer)
 
     def forward(self, x: np.ndarray) -> np.ndarray:
         """
