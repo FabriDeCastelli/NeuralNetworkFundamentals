@@ -65,11 +65,11 @@ def create_model(
 
     sgd = SGD(learning_rate, momentum)
     loss = loss_dict.get(loss)
-    print(metrics)
+    #print(metrics)
     metrics_object = []
     for metric in metrics:
         metrics_object.append(metrics_dict.get(metric))
-    print(metrics_object)
+    #print(metrics_object)
     model.compile(sgd, loss, metrics_object)
     return model
 

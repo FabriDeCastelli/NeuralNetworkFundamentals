@@ -89,14 +89,14 @@ class GridSearch:
         best_val_loss = np.inf
 
         for result, model in results:
-            print(result[1][0])
+            #print(result[1][0])
             mean_val = result[1][0]['loss']
             if mean_val < best_val_loss:
                 best_val_loss = mean_val
                 best_scores = result
                 best_model = model
 
-        print(f"Best model: {best_model.summary()}")
+        #print(f"Best model: {best_model.summary()}")
         print(f"Best score: {best_val_loss}")
         return best_scores, best_model
 
@@ -157,4 +157,4 @@ if __name__ == '__main__':
     params = load_hparams("nn")
     grid_search = RandomGridSearch(params)
     grid_search.run_search(None, None, None)
-    print(grid_search.get_parameters_combination(2))
+    #print(grid_search.get_parameters_combination(2))
