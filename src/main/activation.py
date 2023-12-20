@@ -6,9 +6,6 @@ class Activation:
     Base class for activation functions
     """
 
-    def __init__(self):
-        pass
-
     def forward(self, x):
         """
         computes the output of the activation function
@@ -33,14 +30,10 @@ class Activation:
         raise NotImplementedError()
 
 
-
 class ReLu(Activation):
     """
     ReLu activation function
     """
-
-    def __init__(self):
-        super().__init__()
 
     def forward(self, x):
         return np.maximum(0, x)
@@ -57,9 +50,6 @@ class Identity(Activation):
     Identity activation function
     """
 
-    def __init__(self):
-        super().__init__()
-
     def forward(self, x):
         return x
 
@@ -75,9 +65,6 @@ class Sigmoid(Activation):
     Sigmoid activation function
     """
 
-    def __init__(self):
-        super().__init__()
-
     def forward(self, x):
         return 1 / (1 + np.exp(-x))
 
@@ -85,16 +72,13 @@ class Sigmoid(Activation):
         return self.forward(x) * (1 - self.forward(x))
 
     def to_string(self):
-        return "sigmoid"
+        return "Sigmoid"
 
 
 class Tanh(Activation):
     """
     Tanh activation function
     """
-
-    def __init__(self):
-        super().__init__()
 
     def forward(self, x):
         return np.tanh(x)

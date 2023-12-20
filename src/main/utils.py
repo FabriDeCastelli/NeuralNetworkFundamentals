@@ -47,19 +47,21 @@ def shuffle_data(X, y):
 def create_model(
         units: list[int],
         activations: list[str],
-        initializer: str,
-        learning_rate: float,
-        momentum: float,
         loss: str,
         metrics: list[str],
+        weight_initializer: str = 'random_normal',
+        bias_initializer: str = 'zeros',
+        learning_rate: float = 0.01,
+        momentum: float = 0.0,
         **_
 ):
     assert len(units) - 1 == len(activations)
     model = Model()
-    initializer = initializer_dict.get(initializer)
+    weight_initializer = initializer_dict.get(weight_initializer)
+    bias_initializer = initializer_dict.get(bias_initializer)
     for i in range(len(units) - 1):
         activation = activation_dict.get(activations[i])
-        model.add(Dense(units[i], units[i + 1], initializer, (-0.7, 0.7), activation))
+        model.add(Dense(units[i], units[i + 1], weight_initializer, bias_initializer, activation))
 
     sgd = SGD(learning_rate, momentum)
     loss = loss_dict.get(loss)
@@ -72,7 +74,7 @@ def create_model(
     return model
 
 
-def initialize_score(model):  # FORSE INUTILE(?)
+def initialize_score(model):
     """initialize all the scores of the model to -1"""
     model_score = {"loss": float('inf')}
     for metric in model.metrics:

@@ -1,8 +1,8 @@
 import numpy as np
 from .layers.layer import Layer
-from src.main.metric import Metric
-from src.main.optimizer import Optimizer
-from src.main.loss import Loss
+from src.main.metric import Metric, metrics_dict
+from src.main.optimizer import Optimizer, optimizer_dict
+from src.main.loss import Loss, loss_dict
 
 
 class Model:
@@ -26,7 +26,12 @@ class Model:
         """
         self.layers.append(layer)
 
-    def compile(self, optimizer: Optimizer, loss: Loss, metrics: list[Metric]):
+    def compile(
+            self,
+            optimizer: str | Optimizer,
+            loss: str | Loss,
+            metrics: list[str | Metric]
+    ):
         """
         Prepares the model for fitting with an optimizer, a loss and a list of metrics.
 
@@ -34,8 +39,23 @@ class Model:
         :param loss: the loss to use
         :param metrics: the list of metrics to use
         """
-        self.loss = loss
+        if isinstance(optimizer, str):
+            optimizer = optimizer_dict.get(optimizer)
+            if optimizer is None:
+                raise ValueError("Invalid optimizer")
+
+        if isinstance(loss, str):
+            loss = loss_dict.get(loss)
+            if loss is None:
+                raise ValueError("Invalid loss")
+
+        if not isinstance(metrics, list):
+            raise ValueError("Metrics must be a list")
+
+        metrics = list(map(lambda x: metrics_dict.get(x) if isinstance(x, str) else x, metrics))
+
         self.optimizer = optimizer
+        self.loss = loss
         self.metrics = metrics
 
     def fit(self, x: np.ndarray, y: np.ndarray, epochs=256, batch_size=20, verbose=False):
@@ -56,6 +76,27 @@ class Model:
 
             if verbose and epoch % 50 == 0:
                 print(f"Epoch {epoch + 1}/{epochs} - Loss: {self.evaluate(x, y)}")
+
+    def train_one_step(self, x: np.ndarray, y: np.ndarray):
+        """
+        Trains the model on one batch of data.
+
+        :param x: the input data
+        :param y: the target data
+        """
+
+        # Forward Pass
+        y_pred = self.forward(x)
+
+        # Compute Loss derivative to propagate back
+        delta = self.loss.backward(y_pred, y)
+
+        # Backward Pass
+        self.backward(delta)
+
+        # Update Parameters
+        for layer in reversed(self.layers):
+            self.optimizer.update_parameters(layer)
 
     def forward(self, x: np.ndarray) -> np.ndarray:
         """
@@ -79,8 +120,6 @@ class Model:
         for layer in reversed(self.layers):
             delta = layer.backward(delta)
 
-        return delta
-
     def predict(self, x: np.ndarray) -> np.ndarray:
         """
         Performs a prediction on the input data_for_testing.
@@ -100,32 +139,15 @@ class Model:
         """
 
         y_pred = self.predict(x)
-        
+
         model_score = {}
-        
+
         for metric in self.metrics:
             model_score[metric.to_string()] = metric.evaluate(y_pred, y)
-        
+
         model_score["loss"] = self.loss.forward(y_pred, y)
 
-        return model_score 
-
-    def train_one_step(self, x: np.ndarray, y: np.ndarray) -> np.ndarray:
-        """
-        Trains the model on one batch of data.
-
-        :param x: the input data
-        :param y: the target data
-        """
-        y_pred = x
-        for layer in self.layers:
-            y_pred = layer.forward(y_pred)
-
-        delta = self.loss.backward(y_pred, y)
-
-        for layer in reversed(self.layers):
-            self.optimizer.update_parameters(layer, delta)
-            delta = layer.backward(delta)
+        return model_score
 
     def summary(self):
         """

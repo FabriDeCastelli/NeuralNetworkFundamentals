@@ -41,16 +41,20 @@ def get_monk(number: int) -> (np.ndarray, np.ndarray, np.ndarray, np.ndarray):
     x_train.set_index('Id', inplace=True)
     y_train = x_train.pop('class')
 
+    y_train = y_train.to_numpy()[:, np.newaxis]
+
     # read test set
     x_test = pd.read_csv(test_set_path, sep=' ', names=col_names)
     x_test.set_index('Id', inplace=True)
     y_test = x_test.pop('class')
 
+    y_test = y_test.to_numpy()[:, np.newaxis]
+
     # 1-hot encoding (and transform dataframe to numpy array)
     x_train = OneHotEncoder().fit_transform(x_train).toarray().astype(np.float32)
-    y_train = OneHotEncoder().fit_transform(y_train.to_numpy()[:, np.newaxis]).toarray().astype(np.float32)
+    # y_train = OneHotEncoder().fit_transform(y_train.to_numpy()[:, np.newaxis]).toarray().astype(np.float32)
     x_test = OneHotEncoder().fit_transform(x_test).toarray().astype(np.float32)
-    y_test = OneHotEncoder().fit_transform(y_test.to_numpy()[:, np.newaxis]).toarray().astype(np.float32)
+    # y_test = OneHotEncoder().fit_transform(y_test.to_numpy()[:, np.newaxis]).toarray().astype(np.float32)
 
     print(x_train.shape)
     print(y_train.shape)

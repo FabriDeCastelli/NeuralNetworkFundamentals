@@ -6,9 +6,6 @@ class Metric:
     Base class for evaluation metrics
     """
 
-    def __init__(self):
-        pass
-
     def to_string(self):
         raise NotImplementedError()
 
@@ -29,12 +26,9 @@ class RootMeanSquaredError(Metric):
     Root Mean Squared Error evaluation metric
     """
 
-    def __init__(self):
-        super().__init__()
-
     def evaluate(self, y_pred, y_true):
         return np.sqrt(np.mean((y_pred - y_true) ** 2))
-    
+
     def to_string(self):
         return "Root Mean Squared Error"
 
@@ -44,17 +38,28 @@ class Accuracy(Metric):
     Accuracy evaluation metric
     """
 
-    def __init__(self):
-        super().__init__()
-
     def evaluate(self, y_pred, y_true):
         return np.mean(np.argmax(y_pred, axis=1) == np.argmax(y_true, axis=1))
-    
+
     def to_string(self):
         return "Accuracy"
 
 
+class BinaryAccuracy(Metric):
+    """
+    Binary Accuracy evaluation metric
+    """
+
+    def evaluate(self, y_pred, y_true, threshold=0.7):
+        y_pred = np.where(y_pred > threshold, 1, 0)
+        return np.mean(y_pred == y_true)
+
+    def to_string(self):
+        return "Binary Accuracy"
+
+
 metrics_dict = {
-    "RMSE": RootMeanSquaredError(),
-    "Accuracy": Accuracy()
+    "RootMeanSquaredError": RootMeanSquaredError(),
+    "accuracy": Accuracy(),
+    "binary_accuracy": BinaryAccuracy(),
 }

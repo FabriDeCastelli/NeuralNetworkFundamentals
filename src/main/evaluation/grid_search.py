@@ -96,7 +96,7 @@ class GridSearch:
                 best_scores = result
                 best_model = model
 
-        print(f"Best model: {best_model}")
+        print(f"Best model: {best_model.summary()}")
         print(f"Best score: {best_val_loss}")
         return best_scores, best_model
 

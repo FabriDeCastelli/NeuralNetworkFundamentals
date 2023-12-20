@@ -1,7 +1,7 @@
 import numpy as np
 from .layer import Layer
-from src.main.activation import Activation
-from src.main.initializer import Initializer
+from src.main.initializer import initializer_dict, Initializer
+from src.main.activation import activation_dict, Activation
 
 
 class Dense(Layer):
@@ -14,29 +14,52 @@ class Dense(Layer):
             self,
             input_size: int,
             output_size: int,
-            initializer: Initializer,
-            range: (float, float),
-            activation: Activation,
+            weight_initializer: str | Initializer = 'random_normal',
+            bias_initializer: str | Initializer = 'zeros',
+            activation: str | Activation = 'identity',
     ):
         """
         Constructor for the Dense layer.
 
         :param input_size: size of the input to the layer
         :param output_size: size of the output of the layer
-        :param initializer: initializer for the weights and biases
-        :param range: range for the weights and biases
+        :param weight_initializer: initializer for the weights
+        :param bias_initializer: initializer for the bias
         :param activation: activation function to use
         """
+
+        if input_size <= 0 or output_size <= 0:
+            raise ValueError("Invalid input/output size of the layer")
+
         self.input_size = input_size
         self.output_size = output_size
-        self.weights = initializer.weight_init((input_size, output_size), range)
-        self.bias = initializer.bias_init((output_size,))
+
+        if isinstance(weight_initializer, str):
+            weight_initializer = initializer_dict.get(weight_initializer)
+            if weight_initializer is None:
+                raise ValueError("Invalid weight initializer")
+
+        if isinstance(bias_initializer, str):
+            bias_initializer = initializer_dict.get(bias_initializer)
+            if bias_initializer is None:
+                raise ValueError("Invalid bias initializer")
+
+        self.weights = weight_initializer((input_size, output_size))
+        self.bias = bias_initializer((output_size,))
+
+        if isinstance(activation, str):
+            activation = activation_dict.get(activation)
+            if activation is None:
+                raise ValueError("Invalid activation function")
+
         self.activation = activation
-        # input before activation
-        self.net = None
+
+        # Backpropagation variables
         self.input = None
+        self.output = None
+        self.delta = None
         self.delta_w_old = np.zeros((input_size, output_size))
-        self.delta_b_old = np.zeros((output_size))
+        self.delta_b_old = np.zeros(output_size)
 
     def forward(self, x: np.ndarray) -> np.ndarray:
         """
@@ -46,23 +69,19 @@ class Dense(Layer):
         :return: output of the layer
         """
         self.input = x
-        self.net = np.dot(x, self.weights) + self.bias
-        return self.activation.forward(self.net)
+        self.output = np.dot(x, self.weights) + self.bias
+        return self.activation.forward(self.output)
 
     def backward(self, delta: np.ndarray) -> np.ndarray:
         """
         Performs a backward pass of the layer.
         
         :param delta: error propagated by next layer
-        :return: error to prop to the previous layer
+        :return: error to propagate to the previous layer
         """
-
-        """
-        print("delta", delta.shape)
-        print("weights", self.weights.shape)
-        print("net", self.net.shape)
-        """
-        return np.dot(delta * self.activation.backward(self.net), self.weights.T)
+        
+        self.delta = delta * self.activation.backward(self.output)
+        return self.delta.dot(self.weights.T)
 
     def summary(self):
         """
@@ -86,6 +105,9 @@ class Dense(Layer):
 
     def get_delta_w_old(self):
         return self.delta_w_old
+
+    def get_delta(self):
+        return self.delta
 
     def get_delta_b_old(self):
         return self.delta_b_old

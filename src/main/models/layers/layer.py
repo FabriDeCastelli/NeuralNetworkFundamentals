@@ -51,6 +51,12 @@ class Layer:
         """
         raise NotImplementedError()
 
+    def get_delta(self):
+        """
+        Returns the delta saved in the backward pass.
+        """
+        raise NotImplementedError()
+
     def get_delta_w_old(self):
         """
         Returns the delta_w_old of the layer.

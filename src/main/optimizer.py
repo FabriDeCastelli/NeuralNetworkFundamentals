@@ -10,7 +10,7 @@ class Optimizer:
     def __init__(self):
         pass
 
-    def update_parameters(self, layer: Layer, delta: np.ndarray):
+    def update_parameters(self, layer: Layer):
         """
         updating weights of a layer
         
@@ -22,6 +22,9 @@ class Optimizer:
         raise NotImplementedError()
 
     def to_string(self):
+        raise NotImplementedError()
+    
+    def get_learning_rate(self):
         raise NotImplementedError()
 
 
@@ -42,7 +45,12 @@ class SGD(Optimizer):
         self.momentum = momentum
 
     def to_string(self):
-        return "Stochastic Gradient Descent"
+        return (
+                "Stochastic Gradient Descent"
+                + f"\nLearning rate: {self.learning_rate}"
+                + f"\nMomentum: {self.momentum}"
+        )
+
 
     def get_momentum(self):
         return self.momentum
@@ -50,7 +58,7 @@ class SGD(Optimizer):
     def get_learning_rate(self):
         return self.learning_rate
 
-    def update_parameters(self, layer: Layer, delta: np.ndarray):
+    def update_parameters(self, layer: Layer):
         """
         updating the weights of a layer
         
@@ -58,23 +66,19 @@ class SGD(Optimizer):
         :param delta: the error backpropagated from the next layer
         """
 
+        delta = layer.get_delta()
         batch_size = delta.shape[0]
 
-        delta_w = np.dot(layer.get_input().T, delta) / batch_size
-        delta_b = delta.sum(axis=0) / batch_size
-
-        delta_w = - self.learning_rate * delta_w + self.momentum * layer.get_delta_w_old()
-        delta_b = - self.learning_rate * delta_b + self.momentum * layer.get_delta_b_old()
+        delta_w = - self.learning_rate / batch_size * np.dot(layer.get_input().T, delta)
+        delta_b = - self.learning_rate / batch_size * delta.sum(axis=0)
 
         new_weights = layer.get_weights() + delta_w
         new_b = layer.get_bias() + delta_b
 
         layer.set_weights(new_weights)
         layer.set_bias(new_b)
-        layer.set_delta_w_old(delta_w)
-        layer.set_delta_b_old(delta_b)
 
 
 optimizer_dict = {
-    "SGD": SGD()
+    "sgd": SGD()
 }
