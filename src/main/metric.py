@@ -30,7 +30,7 @@ class RootMeanSquaredError(Metric):
         return np.sqrt(np.mean((y_pred - y_true) ** 2))
 
     def to_string(self):
-        return "Root Mean Squared Error"
+        return "root_mean_squared_error"
 
 
 class Accuracy(Metric):
@@ -42,7 +42,7 @@ class Accuracy(Metric):
         return np.mean(np.argmax(y_pred, axis=1) == np.argmax(y_true, axis=1))
 
     def to_string(self):
-        return "Accuracy"
+        return "accuracy"
 
 
 class BinaryAccuracy(Metric):
@@ -55,17 +55,17 @@ class BinaryAccuracy(Metric):
         return np.mean(y_pred == y_true)
 
     def to_string(self):
-        return "Binary Accuracy"
+        return "binary_accuracy"
 
 
 metrics_dict = {
-    "RootMeanSquaredError": RootMeanSquaredError(),
+    "root_mean_squared_error": RootMeanSquaredError(),
     "accuracy": Accuracy(),
     "binary_accuracy": BinaryAccuracy(),
 }
 
 #hash map to know which metric to maximize and which to minimize
 metrics_map = {
-    "maximize": ["Accuracy", "Binary Accuracy"],
-    "minimize": ["Root Mean Squared Error"],
+    "maximize": ["accuracy", "binary_accuracy"],
+    "minimize": ["root_mean_squared_error"],
 }

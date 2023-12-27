@@ -3,6 +3,7 @@ from typing import Any
 
 import yaml
 import numpy as np
+import pandas as pd
 
 from config.config import HPARAMS_ROOT, PROJECT_FOLDER_PATH
 from src.main.activation import activation_dict
@@ -84,7 +85,10 @@ def initialize_score(model):
 
 
 def mean_std_scores(scores):
-    """compute the mean and the std of the scores returned as dictionaries"""
+    """compute the mean and the std of the scores returned as dictionaries
+    
+    :param scores: list of dictionaries
+    """
 
     mean_score = {}
     std_score = {}
@@ -99,30 +103,42 @@ def mean_std_scores(scores):
     return mean_score, std_score
 
 
-def compute_metrics(results):
-    # TODO: implement
-    pass
-
-
-# LA CHIAMA IL JUPYTER!!!!
-def log_experiment(exp_dir, results):
-    """Logs the results of an experiments on a csv file
-    
-    :param exp_dir: the directory where the results will be saved
-    :param results: the results as list of dictionary
+def compute_metrics(model, train_mean, train_std, val_mean, val_std, test_mean, test_std):
     """
-    metrics = compute_metrics(results)
-    metrics.to_csv(exp_dir / "metrics.csv", index=False, decimal=',')
+    take the model and the scores on the set and create a pandas dataframe with the results
+    """
+    def round_number(x,y,z):
+        return [round(x, 4), round(y, 4), round(z, 4)]
+    
+    means = []
+    stds = []
+    sets = ["Training", "Validation", "Test"]
+    
+    metrics = [metric.to_string() for metric in model.get_metrics() + [model.get_loss()]]
 
+    for metric in metrics:
+        means.extend(round_number(train_mean[metric], val_mean[metric], test_mean[metric]))
+        stds.extend(round_number(train_std[metric], val_std[metric], test_std[metric]))
+        
+    metrics = [el for el in metrics for _ in range(3)]
+    
+    data = {'Metrics': metrics, 'Set': sets*(len(metrics)//3), 'Mean': means, 'Std': stds}
+    df = pd.DataFrame(data)
+    return df
+
+def log_experiment(exp_dir, model, train_mean, train_std, val_mean, val_std, test_mean, test_std):
+    """Logs the results of an experiments on a csv file inside exp_dir
+    """
+    metrics = compute_metrics(model, train_mean, train_std, val_mean, val_std, test_mean, test_std)
+    metrics.to_csv(exp_dir / "metrics.csv", index=False, decimal=',')
 
 def setup_experiment(name: str) -> Path:
     """Initializes experiment by creating the proper directory
-    :param name: the name of the experiment
+    :param name: the name of the experiment as string
     
     :return: the path of the experiment directory
     """
-
-    root = PROJECT_FOLDER_PATH / "experiments"
+    root = PROJECT_FOLDER_PATH / Path("experiments")
     exp_dir = root / name
     exp_dir.mkdir(exist_ok=True, parents=True)
     return exp_dir

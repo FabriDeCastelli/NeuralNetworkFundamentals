@@ -22,6 +22,12 @@ class Model:
         self.regularizer = None
         self.layers = []
 
+    def get_loss(self):
+        return self.loss
+    
+    def get_metrics(self):
+        return self.metrics
+    
     def add(self, layer: Layer):
         """
         Adds a layer to the model.
@@ -33,9 +39,9 @@ class Model:
     def compile(
             self,
             optimizer: str | Optimizer,
-            callback: str | Callback,
             loss: str | Loss,
             metrics: list[str | Metric],
+            callback: str | Callback = None,
             regularizer: str | Regularizer = None,
     ):
         """
@@ -106,7 +112,7 @@ class Model:
                 self.train_one_step(x_batch, y_batch)
                
             #early stopping logic                    
-            if(self.callback is not None):
+            if(self.callback is not None and x_val is not None):
                 val_score = self.evaluate(x_val, y_val)
                 self.callback.increment_counter()
                 if(self.callback.get_restore_best_weights()):
@@ -194,7 +200,7 @@ class Model:
         for metric in self.metrics:
             model_score[metric.to_string()] = metric.evaluate(y_pred, y)
 
-        model_score["loss"] = self.loss.forward(y_pred, y)
+        model_score[self.get_loss().to_string()] = self.loss.forward(y_pred, y)
 
         return model_score
 

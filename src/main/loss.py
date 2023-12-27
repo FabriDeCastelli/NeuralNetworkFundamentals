@@ -43,7 +43,7 @@ class MSE(Loss):
         return 2 * (y_pred - y_true) / y_true.size
 
     def to_string(self):
-        return "MSE"
+        return "mean_squared_error_loss"
 
 
 class MEE(Loss):
@@ -58,7 +58,7 @@ class MEE(Loss):
         return y_pred - y_true / y_pred.shape[0]
 
     def to_string(self):
-        return "Mean Euclidean Error"
+        return "mean_euclidean_error"
 
 
 class CrossEntropy(Loss):
@@ -73,7 +73,7 @@ class CrossEntropy(Loss):
         return y_pred - y_true / y_pred.shape[0]
 
     def to_string(self):
-        return "Cross Entropy"
+        return "cross_entropy"
 
 
 class BinaryCrossEntropy(Loss):
@@ -88,12 +88,12 @@ class BinaryCrossEntropy(Loss):
         return y_pred - y_true / y_pred.shape[0]
 
     def to_string(self):
-        return "Binary Cross Entropy"
+        return "binary_cross_entropy"
 
 
 loss_dict = {
     "mean_squared_error": MSE(),
-    "mean_euclidean_error": MEE(),
+    "mean_euclidean_error_loss": MEE(),
     "cross_entropy": CrossEntropy(),
     "binary_cross_entropy": BinaryCrossEntropy()
 }

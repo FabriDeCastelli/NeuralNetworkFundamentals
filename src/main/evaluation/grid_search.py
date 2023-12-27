@@ -89,7 +89,7 @@ class GridSearch:
 
         for result, model in results:
             # print(result[1][0])
-            mean_val = result[1][0]['loss']
+            mean_val = result[1][0][model.get_loss().to_string()]
             if mean_val < best_val_loss:
                 best_val_loss = mean_val
                 best_scores = result

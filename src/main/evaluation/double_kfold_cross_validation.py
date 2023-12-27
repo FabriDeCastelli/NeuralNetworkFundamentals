@@ -5,7 +5,7 @@ from src.main.utils import shuffle_data, log_experiment
 from src.main.utils import mean_std_scores
 
 
-def double_Kfold_CV(X, y, grid_search, k=5, verbose=False):
+def double_Kfold_CV(X, y, grid_search, k=5,  verbose=False):
     """
     function that allow to compute the double kfold cross validation
     
@@ -33,7 +33,7 @@ def double_Kfold_CV(X, y, grid_search, k=5, verbose=False):
         """train_mean, train_std, val_mean, val_std,""" 
         ((train_mean, train_std), (val_mean, val_std)), model = grid_search.run_search(x_train, y_train, verbose)
         
-        model.fit(x_train, y_train, False)
+        #model.fit(x_train, y_train,None,None, epoch, batch_size, False)
         
         test_scores.append(model.evaluate(x_test, y_test))
         models.append(model)
