@@ -63,3 +63,9 @@ metrics_dict = {
     "accuracy": Accuracy(),
     "binary_accuracy": BinaryAccuracy(),
 }
+
+#hash map to know which metric to maximize and which to minimize
+metrics_map = {
+    "maximize": ["Accuracy", "Binary Accuracy"],
+    "minimize": ["Root Mean Squared Error"],
+}

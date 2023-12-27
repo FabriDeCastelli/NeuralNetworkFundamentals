@@ -104,18 +104,22 @@ class Model:
                 y_batch = y_batch[idx]
 
                 self.train_one_step(x_batch, y_batch)
-                                
+               
+            #early stopping logic                    
             if(self.callback is not None):
                 val_score = self.evaluate(x_val, y_val)
-                self.callback.update_val_history(val_score)
                 self.callback.increment_counter()
+                if(self.callback.get_restore_best_weights()):
+                    self.callback.update_best_model(self, val_score)
+                self.callback.update_val_history(self, val_score)        
                                 
                 if(self.callback.check_stop()):
                     print("Early Stopping Triggered at iter: ", self.callback.get_counter())
+                    if(self.callback.get_restore_best_weights()):
+                        self = self.callback.get_best_model()
                     self.callback.reset()
                     break
         
-                
             if verbose and epoch % 50 == 0:
                 print(f"Epoch {epoch + 1}/{epochs} - Loss: {self.evaluate(x_train, y_train)}")
         

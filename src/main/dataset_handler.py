@@ -56,10 +56,11 @@ def get_monk(number: int) -> (np.ndarray, np.ndarray, np.ndarray, np.ndarray):
     x_test = OneHotEncoder().fit_transform(x_test).toarray().astype(np.float32)
     # y_test = OneHotEncoder().fit_transform(y_test.to_numpy()[:, np.newaxis]).toarray().astype(np.float32)
 
+    """    
     print(x_train.shape)
     print(y_train.shape)
     print(x_test.shape)
-    print(y_test.shape)
+    print(y_test.shape)"""
 
     assert x_train.shape[1] == x_test.shape[1]
     assert y_train.shape[1] == y_test.shape[1]

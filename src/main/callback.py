@@ -1,4 +1,5 @@
-import numpy as np
+from src.main.metric import Metric, metrics_map
+from src.main.loss import Loss, loss_map
 
 
 class Callback:
@@ -18,38 +19,54 @@ class EarlyStopping(Callback):
     
     def __init__(
         self, 
-        start_from_epoch: int = 150, 
-        number_of_iter: int = 5,
+        patience: int = 5, 
+        start_from_epoch: int = 100,
         delta: float = 0.001,
-        monitor: str = 'val_loss',
+        monitor: str | Metric | Loss = 'loss',
+        restore_best_weights: bool = False,
+        verbose: bool = False
     ):
         """
-        :param patience: the number of epochs to wait before stopping the training
+        :param patience: the number of epochs with no improvement before stopping the training
+        :param start_from_epoch: the number of epochs to wait before stopping the training
         :param delta: the minimum change in the monitored metric to qualify as an improvement
-        :param stopping_metric: the metric to monitor        
+        :param monitor: the metric to monitor    
+        :restore_best_weights: whether to restore model weights from the epoch with the best value of the monitored metric    
         """
-        self.counter = 0
-        self.val_history = []
-        self.patience = start_from_epoch
-        self.number_of_iter = number_of_iter
+        self.patience = patience
+        self.star_from_epoch = start_from_epoch
         self.delta = delta
         self.monitor = monitor
+        self.restore_best_weights = restore_best_weights
+        self.verbose = verbose
+
+        self.counter = 0
+        self.val_history = []
+        self.best_model = None
+        self.best_iter_model = 0
           
     def get_counter(self):
         return self.counter
     
     def increment_counter(self):
         self.counter += 1      
+        
+    def get_best_model(self):
+        return self.best_model
+    
+    def get_restore_best_weights(self):
+        return self.restore_best_weights
+    
+    def get_best_iter_model(self):      
+        return self.best_iter_model
                 
     def check_stop(self):
+        """
+        check if the training should be stopped
         
+        :return: True if the training should be stopped, False otherwise
         """
-        def check(list, delta):
-            t = []
-            for el in list:
-                t.append(el[self.stopping_metric])  
-            return max(t) - min(t) <= delta
-        """
+        
         def check(lst, delta):
             """
             Checks if all elements in the list are different by at most delta.
@@ -62,22 +79,55 @@ class EarlyStopping(Callback):
             for i in range(n):
                 for j in range(i + 1, n):
                     if abs(lst[i][self.monitor] - lst[j][self.monitor]) > delta:
-                        return False  # Difference exceeds delta, elements are not within the threshold
-            return True  # All elements are within the threshold delta
+                        return False  
+            return True  
             
-        if(self.counter < self.patience):
+        if(self.counter < self.star_from_epoch):
             return False
     
-        if(check(self.val_history[-self.number_of_iter:], self.delta)):
+        if(check(self.val_history[-self.patience:], self.delta)):
+            if(self.verbose and self.restore_best_weights):
+                print("Best model at iter: ", self.best_iter_model)
             return True
         return False     
     
-    def update_val_history(self, val_score: dict):
+    def update_best_model(self, model, val_score: dict):
+        """
+        update best model
+        
+        :param model: the model to check if it is the best model
+        :param val_score: the new validation score
+        """
+        if(self.best_model is None):
+            self.best_model = model
+            self.best_iter_model = self.counter
+        elif(val_score[self.monitor] < self.val_history[-1][self.monitor] and 
+             (self.monitor in metrics_map["minimize"] or self.monitor in loss_map["minimize"]) ):
+            self.best_model = model
+            self.best_iter_model = self.counter
+        elif(val_score[self.monitor] > self.val_history[-1][self.monitor] and 
+             self.monitor in metrics_map["maximize"]):
+            self.best_model = model         
+            self.best_iter_model = self.counter   
+    
+    def update_val_history(self, model, val_score: dict):
+        """
+        update the validation history with the new validation score and store the best model
+        
+        :param model: the model to check if it is the best model
+        :param val_score: the new validation score
+        """
         self.val_history.append(val_score)
         
     def reset(self):
+        """
+        reset the object to the initial state
+        """
+        
         self.counter = 0
         self.val_history = []
+        self.best_model = None
+        self.best_iter_model = 0
     
     
     

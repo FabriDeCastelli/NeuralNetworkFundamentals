@@ -97,3 +97,8 @@ loss_dict = {
     "cross_entropy": CrossEntropy(),
     "binary_cross_entropy": BinaryCrossEntropy()
 }
+
+#hash map to know which metric to maximize and which to minimize (always minimize the loss)
+loss_map = {
+    "minimize": ["loss"]
+}
