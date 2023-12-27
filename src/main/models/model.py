@@ -2,6 +2,7 @@ import numpy as np
 from .layers.layer import Layer
 from src.main.metric import Metric, metrics_dict
 from src.main.optimizer import Optimizer, optimizer_dict
+from src.main.callback import Callback, callback_dict
 from src.main.loss import Loss, loss_dict
 from src.main.regularizer import Regularizer, regularizer_dict
 
@@ -15,6 +16,7 @@ class Model:
         Layers can be added to the model with the add method.
         """
         self.optimizer = None
+        self.callback = None
         self.metrics = None
         self.loss = None
         self.regularizer = None
@@ -31,6 +33,7 @@ class Model:
     def compile(
             self,
             optimizer: str | Optimizer,
+            callback: str | Callback,
             loss: str | Loss,
             metrics: list[str | Metric],
             regularizer: str | Regularizer = None,
@@ -47,6 +50,11 @@ class Model:
             optimizer = optimizer_dict.get(optimizer)
             if optimizer is None:
                 raise ValueError("Invalid optimizer")
+          
+        if isinstance(callback, str):
+            callback = callback_dict.get(callback)
+            if callback is None:
+                raise ValueError("Invalid callback")
 
         if isinstance(loss, str):
             loss = loss_dict.get(loss)
@@ -65,25 +73,30 @@ class Model:
                     raise ValueError("Invalid regularizer")
 
         self.optimizer = optimizer
+        self.callback = callback
         self.loss = loss
         self.metrics = metrics
         self.regularizer = regularizer
 
-    def fit(self, x: np.ndarray, y: np.ndarray, epochs=256, batch_size=20, verbose=False):
+    def fit(self, x_train: np.ndarray, y_train: np.ndarray, x_val: np.ndarray, y_val: np.ndarray, 
+            epochs=256, batch_size=20, verbose=False):
         """
-        Fits the model to the data_for_testing.
+        Fits the model using the training data.
 
-        :param x: the input data_for_testing
-        :param y: the target data_for_testing
+        :param x_train: the input data for training
+        :param y_train: the target data for training
+        :param x_val: the input data for validation
+        :param y_val: the target data for validation
         :param epochs: the number of epochs to train the model
         :param batch_size: the size of the batch to process at each epoch
         :param verbose: whether to print the progress of the training
         """
+                
         for epoch in range(epochs):
-            for batch in range(len(x) // batch_size):
-
-                x_batch = x[batch * batch_size: (batch + 1) * batch_size]
-                y_batch = y[batch * batch_size: (batch + 1) * batch_size]
+            for batch in range(len(x_train) // batch_size):
+                
+                x_batch = x_train[batch * batch_size: (batch + 1) * batch_size]
+                y_batch = y_train[batch * batch_size: (batch + 1) * batch_size]
 
                 # shuffle the data
                 idx = np.random.permutation(len(x_batch))
@@ -91,9 +104,23 @@ class Model:
                 y_batch = y_batch[idx]
 
                 self.train_one_step(x_batch, y_batch)
-
+                                
+            if(self.callback is not None):
+                val_score = self.evaluate(x_val, y_val)
+                self.callback.update_val_history(val_score)
+                self.callback.increment_counter()
+                                
+                if(self.callback.check_stop()):
+                    print("Early Stopping Triggered at iter: ", self.callback.get_counter())
+                    self.callback.reset()
+                    break
+        
+                
             if verbose and epoch % 50 == 0:
-                print(f"Epoch {epoch + 1}/{epochs} - Loss: {self.evaluate(x, y)}")
+                print(f"Epoch {epoch + 1}/{epochs} - Loss: {self.evaluate(x_train, y_train)}")
+        
+        if(self.callback is not None):
+            self.callback.reset()
 
     def train_one_step(self, x: np.ndarray, y: np.ndarray):
         """
