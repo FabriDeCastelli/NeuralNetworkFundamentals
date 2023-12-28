@@ -1,7 +1,6 @@
 from pathlib import Path
 from typing import Any
 
-import sns
 import yaml
 import numpy as np
 import pandas as pd
@@ -171,8 +170,8 @@ def plot_history(history):
     for metric in history.keys():
         epochs = np.arange(1, len(history[metric]['training']) + 1)
         plt.figure(figsize=(8, 5))
-        plt.plot(epochs, history[metric]['training'], label='Training', marker='o')
-        plt.plot(epochs, history[metric]['validation'], label='Validation', marker='o')
+        plt.plot(epochs, history[metric]['training'], label='Training')
+        plt.plot(epochs, history[metric]['validation'], label='Validation')
 
         plt.title(f'{metric.capitalize()} Over Epochs')
         plt.xlabel('Epochs')

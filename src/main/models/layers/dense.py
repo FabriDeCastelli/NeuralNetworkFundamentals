@@ -107,6 +107,12 @@ class Dense(Layer):
 
     def get_input(self):
         return self.input
+    
+    def get_input_size(self):
+        return self.input_size
+    
+    def get_output_size(self):
+        return self.output_size 
 
     def get_delta(self):
         return self.delta
@@ -128,4 +134,7 @@ class Dense(Layer):
 
     def set_bias(self, new_bias):
         self.bias = new_bias
+        
+    def get_weights_initializer(self):
+        return self.weights_initializer
 

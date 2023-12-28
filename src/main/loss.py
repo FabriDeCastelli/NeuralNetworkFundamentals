@@ -43,7 +43,7 @@ class MSE(Loss):
         return 2 * np.subtract(y_pred, y_true)
 
     def to_string(self):
-        return "mean_squared_error_loss"
+        return "mean_squared_error"
 
 
 class MEE(Loss):
@@ -58,7 +58,7 @@ class MEE(Loss):
         return np.subtract(y_pred, y_true) / np.linalg.norm(y_pred - y_true, ord=2)
 
     def to_string(self):
-        return "mean_euclidean_error"
+        return "mean_euclidean_error_loss"
 
 
 class CrossEntropy(Loss):

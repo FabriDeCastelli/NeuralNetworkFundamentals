@@ -116,6 +116,11 @@ class Model:
 
             training_scores.append(self.evaluate(x_train, y_train))
 
+            val_score = {}
+            if x_val is not None:
+                val_score = self.evaluate(x_val, y_val)
+                validation_scores.append(val_score)
+            
             # early stopping logic
             if self.callback is not None and x_val is not None:
 
@@ -154,7 +159,7 @@ class Model:
             "validation": validation_scores
         })
 
-        if self.callback.get_restore_best_weights():
+        if self.callback is not None and self.callback.get_restore_best_weights():
             return self.callback.get_best_model(), history
 
         return self, history
@@ -228,9 +233,16 @@ class Model:
         for metric in self.metrics:
             model_score[metric.to_string()] = metric.evaluate(y_pred, y)
 
-        model_score['loss'] = self.loss.forward(y_pred, y)
+        model_score[self.loss.to_string()] = self.loss.forward(y_pred, y)
 
         return model_score
+    
+    def initialize_weights(self):
+        """
+        Initializes the weights of the model.
+        """
+        for layer in self.layers:
+            layer.set_weights(layer.get_weights_initializer()((layer.get_input_size(), layer.get_output_size())))
 
     def summary(self):
         """

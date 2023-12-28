@@ -68,7 +68,7 @@ class GridSearch:
         :param x: the input data
         :param y: the target data
         :param parameters_combination: the parameters combination to be used in the grid search
-        :return: the best model found
+        :return: the bestscore,  model and params for fitting found
         """
         assert parameters_combination
 
@@ -77,27 +77,30 @@ class GridSearch:
             model = create_model(**parameters)
             batch_size = parameters['batch_size']
             epochs = parameters['epochs']
-            return Kfold_CV(x, y, model, 5, epochs, batch_size, verbose), model
+            return Kfold_CV(x, y, model, 5, epochs, batch_size, verbose), (epochs, batch_size)
 
         results = Parallel(n_jobs=-1)(
             delayed(run)(parameters, verbose) for parameters in parameters_combination
         )
 
         best_model = None
+        best_params = None
         best_scores = None
         best_val_loss = np.inf
 
-        for result, model in results:
-            # print(result[1][0])
+        for res, params in results:
+            result, model, _ = res
+            print(result[1][0])
             mean_val = result[1][0][model.get_loss().to_string()]
             if mean_val < best_val_loss:
                 best_val_loss = mean_val
                 best_scores = result
                 best_model = model
+                best_params = params
 
         # print(f"Best model: {best_model.summary()}")
         # print(f"Best score: {best_val_loss}")
-        return best_scores, best_model
+        return best_scores, best_model, best_params
 
 
 class NestedGridSearch(GridSearch):

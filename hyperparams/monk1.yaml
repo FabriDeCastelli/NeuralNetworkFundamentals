@@ -6,7 +6,7 @@ learning_rate: [0.9, 0.7, 0.5, 0.1, 0.05, 0.01]
 momentum: [0.9, 0.7, 0.5, 0.1, 0.05, 0.01]
 loss: ['mean_squared_error', 'binary_cross_entropy']
 metrics: [['binary_accuracy']]
-epochs: [1000]
+epochs: [500]
 batch_size: [8, 16, 32]
 
 # early stopping parameters:
