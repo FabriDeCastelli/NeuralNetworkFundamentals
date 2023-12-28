@@ -150,8 +150,8 @@ class RandomGridSearch(GridSearch):
             all_params_combination[i] for i in np.random.choice(total_combinations, combinations)
         ]
 
-    def run_search(self, x, y, verbose):
-        parameters_combination = self.get_parameters_combination()
+    def run_search(self, x, y, verbose, combinations=10):
+        parameters_combination = self.get_parameters_combination(combinations=combinations)
         return super().search(x, y, parameters_combination, verbose)
 
 

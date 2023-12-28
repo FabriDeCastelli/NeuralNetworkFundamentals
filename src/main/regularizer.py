@@ -11,6 +11,9 @@ class Regularizer:
     def backward(self, x):
         raise NotImplementedError()
 
+    def __repr__(self):
+        return self.__class__.__name__
+
 
 class L1(Regularizer):
     def __init__(self, l1=0.01):

@@ -40,7 +40,7 @@ class MSE(Loss):
         return np.mean(np.sum(np.square(np.subtract(y_pred, y_true)), axis=1), axis=0)
 
     def backward(self, y_pred, y_true):
-        return 2 * np.subtract(y_pred, y_true)
+        return np.subtract(y_pred, y_true)
 
     def to_string(self):
         return "mean_squared_error"
@@ -52,10 +52,10 @@ class MEE(Loss):
     """
 
     def forward(self, y_pred, y_true):
-        return np.sqrt(np.mean(np.sum(np.square(np.subtract(y_pred, y_true)), axis=1), axis=0))
+        return np.mean(np.linalg.norm(np.subtract(y_true, y_pred), ord=2, axis=1), axis=0)
 
     def backward(self, y_pred, y_true):
-        return np.subtract(y_pred, y_true) / np.linalg.norm(y_pred - y_true, ord=2)
+        return np.subtract(y_pred, y_true) / self.forward(y_pred, y_true)
 
     def to_string(self):
         return "mean_euclidean_error_loss"
