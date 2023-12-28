@@ -3,10 +3,10 @@ activations: [['sigmoid', 'sigmoid'], ['relu', 'sigmoid']]
 weight_initializer: ['random_normal', 'range', 'glorot_uniform']
 bias_initializer: ['random_normal', 'range', 'zeros']
 learning_rate: [0.1, 0.5, 0.7, 0.9]
+regularizer: [None, 'l1', 'l2']
+lambda: [0.01, 0.001, 0.3]
 momentum: [0.1, 0.5, 0.7, 0.9]
 loss: ['mean_squared_error']
 metrics: [['binary_accuracy']]
 epochs: [500, 700, 1000]
 batch_size: [8, 12, 16]
-
-

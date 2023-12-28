@@ -53,20 +53,21 @@ class Model:
         :param metrics: the list of metrics to use
         :param regularizer: the regularizer to use
         """
+
         if isinstance(optimizer, str):
             optimizer = optimizer_dict.get(optimizer)
             if optimizer is None:
                 raise ValueError("Invalid optimizer")
 
-        if isinstance(callback, str):
-            callback = callback_dict.get(callback)
-            if callback is None:
-                raise ValueError("Invalid callback")
-
         if isinstance(loss, str):
             loss = loss_dict.get(loss)
             if loss is None:
                 raise ValueError("Invalid loss")
+
+        if isinstance(callback, str):
+            callback = callback_dict.get(callback)
+            if callback is None:
+                raise ValueError("Invalid callback")
 
         if not isinstance(metrics, list):
             raise ValueError("Metrics must be a list")

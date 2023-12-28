@@ -10,31 +10,14 @@ class GridSearch:
     Class used to define GridSearch objects
     """
 
-    @staticmethod
-    def create_search_object(search_type):
-        """
-        Function that creates a search object
-
-        :param search_type: the type of search to be performed
-        :return: the search object
-        """
-        if search_type == "grid":
-            return GridSearch(params)
-        elif search_type == "random":
-            return RandomGridSearch(params)
-        elif search_type == "nested":
-            return NestedGridSearch(params)
-        else:
-            raise ValueError("Invalid search type")
-
-    def __init__(self, params):
+    def __init__(self, parameters):
         """
         Constructor of the class
 
-        :param params: the dictionary of parameters to be used in the grid search
+        :param parameters: the dictionary of parameters to be used in the grid search
         """
-        for param in params:
-            setattr(self, param, params[param])
+        for param in parameters:
+            setattr(self, param, parameters[param])
 
     def get_parameters_combination(self):
         """
@@ -45,7 +28,7 @@ class GridSearch:
         keys, values = zip(*self.__dict__.items())
         return [dict(zip(keys, v)) for v in itertools.product(*values)]
 
-    def run_search(self, x, y, verbose):
+    def run_search(self, x, y, verbose=False, combinations=-1):
         """
         Performs a grid search over the parameters stored in the instance.
         At each parameter configuration a K Fold CV is performed and the
@@ -53,13 +36,15 @@ class GridSearch:
 
         :param x: the input data
         :param y: the target data
+        :param verbose: whether to print the progress of the training
+        :param combinations: not used
         :return: the best model found
         """
         parameters_combination = self.get_parameters_combination()
         return GridSearch.search(x, y, parameters_combination, verbose)
 
     @staticmethod
-    def search(x, y, parameters_combination, verbose):
+    def search(x, y, parameters_combination, verbose=False):
         """
         Performs a grid search over the parameters stored in the instance.
         At each parameter configuration a K Fold CV is performed and the
@@ -68,7 +53,8 @@ class GridSearch:
         :param x: the input data
         :param y: the target data
         :param parameters_combination: the parameters combination to be used in the grid search
-        :return: the bestscore,  model and params for fitting found
+        :param verbose: whether to print the progress of the training
+        :return: the best score, model and params for fitting found
         """
         assert parameters_combination
 
@@ -88,7 +74,7 @@ class GridSearch:
         best_scores = None
         best_val_loss = np.inf
 
-        for res, params in results:
+        for res, parameters in results:
             result, model, _ = res
             print(result[1][0])
             mean_val = result[1][0][model.get_loss().to_string()]
@@ -96,10 +82,8 @@ class GridSearch:
                 best_val_loss = mean_val
                 best_scores = result
                 best_model = model
-                best_params = params
+                best_params = parameters
 
-        # print(f"Best model: {best_model.summary()}")
-        # print(f"Best score: {best_val_loss}")
         return best_scores, best_model, best_params
 
 
@@ -150,7 +134,7 @@ class RandomGridSearch(GridSearch):
             all_params_combination[i] for i in np.random.choice(total_combinations, combinations)
         ]
 
-    def run_search(self, x, y, verbose, combinations=10):
+    def run_search(self, x, y, verbose=False, combinations=10):
         parameters_combination = self.get_parameters_combination(combinations=combinations)
         return super().search(x, y, parameters_combination, verbose)
 

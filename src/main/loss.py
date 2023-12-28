@@ -1,5 +1,7 @@
 import numpy as np
 
+from src.main.metric import Metric
+
 
 class Loss:
     """
@@ -31,7 +33,7 @@ class Loss:
         raise NotImplementedError()
 
 
-class MSE(Loss):
+class MSE(Loss, Metric):
     """
     Mean Squared Error loss function
     """
@@ -46,7 +48,7 @@ class MSE(Loss):
         return "mean_squared_error"
 
 
-class MEE(Loss):
+class MEE(Loss, Metric):
     """
     Mean Euclidean Error loss function
     """

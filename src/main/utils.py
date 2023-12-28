@@ -9,12 +9,14 @@ import seaborn as sns
 
 from config.config import HPARAMS_ROOT, PROJECT_FOLDER_PATH
 from src.main.activation import activation_dict
-from src.main.initializer import initializer_dict
+from src.main.callback import Callback
+from src.main.initializer import Initializer
 from src.main.loss import loss_dict
 from src.main.metric import metrics_dict
 from src.main.models.layers.dense import Dense
 from src.main.models.model import Model
 from src.main.optimizer import SGD
+from src.main.regularizer import Regularizer
 
 
 def read_yaml(path: str | Path) -> dict[str, Any]:
@@ -52,16 +54,20 @@ def create_model(
         activations: list[str],
         loss: str,
         metrics: list[str],
-        weight_initializer: str = 'random_normal',
-        bias_initializer: str = 'zeros',
+        callback: str | Callback = None,
+        regularizer: str | Regularizer = None,
+        weight_initializer: str | Initializer = 'glorot_uniform',
+        bias_initializer: str | Initializer = 'zeros',
         learning_rate: float = 0.01,
         momentum: float = 0.0,
+        lambd: float = 0.0,
         **_
 ):
     assert len(units) - 1 == len(activations)
+    assert loss
+    assert metrics
+
     model = Model()
-    weight_initializer = initializer_dict.get(weight_initializer)
-    bias_initializer = initializer_dict.get(bias_initializer)
     for i in range(len(units) - 1):
         activation = activation_dict.get(activations[i])
         model.add(Dense(units[i], units[i + 1], weight_initializer, bias_initializer, activation))
@@ -73,7 +79,7 @@ def create_model(
     for metric in metrics:
         metrics_object.append(metrics_dict.get(metric))
 
-    model.compile(sgd, loss, metrics_object)
+    model.compile(sgd, loss, metrics_object, callback, regularizer)
     return model
 
 
@@ -142,6 +148,7 @@ def log_experiment(exp_dir, model, train_mean, train_std, val_mean, val_std, tes
     :param val_std: the standard deviation of the scores on the validation set
     :param test_mean: the mean of the scores on the test set
     :param test_std: the standard deviation of the scores on the test set
+    :param history: the history of the training
     """
     metrics = compute_metrics(model, train_mean, train_std, val_mean, val_std, test_mean, test_std)
     metrics.to_csv(exp_dir / "metrics.csv", index=False, decimal=',')
