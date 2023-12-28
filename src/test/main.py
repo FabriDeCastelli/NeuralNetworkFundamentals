@@ -1,45 +1,43 @@
-import numpy as np
-from matplotlib import pyplot as plt
-import seaborn as sns
+from keras.models import Sequential
+from keras.layers import Dense
+from keras.optimizers.legacy import SGD
+from sklearn.model_selection import train_test_split
+import tensorflow as tf
+
+from src.main.dataset_handler import get_cup_dataset
+
+x_train, y_train, _ = get_cup_dataset()
+x_train, x_test, y_train, y_test = train_test_split(x_train, y_train, test_size=0.2, random_state=42)
+
+# Create a Sequential model
+model = Sequential()
+
+# Add the input layer
+model.add(Dense(units=10, input_dim=10, activation='relu'))
+
+# Define different units for each hidden layer
+units_list = [20, 30, 40, 50, 40, 30, 20, 15, 12, 10, 8, 6, 4]
+
+# Add the hidden layers with varying units
+for units in units_list:
+    model.add(Dense(units=units, activation='relu'))
+
+# Add the output layer
+model.add(Dense(units=3))
 
 
-def convert_history_format(history):
-    result = {}
-
-    for key, values in history.items():
-        for entry in values:
-            for subkey, subvalue in entry.items():
-                if subkey not in result:
-                    result[subkey] = {}
-                if key not in result[subkey]:
-                    result[subkey][key] = []
-                result[subkey][key].append(subvalue)
-
-    return result
+# Compile the model
+def mean_euclidean_error(y_true, y_pred):
+    return tf.reduce_mean(tf.norm(y_true - y_pred, axis=1))
 
 
-def plot_metric_over_epochs(data, metric, ylabel):
-    plt.figure(figsize=(8, 5))
-    plt.plot(epochs, data[metric]['training'], label='Training', marker='o')
-    plt.plot(epochs, data[metric]['validation'], label='Validation', marker='o')
+sgd = SGD(learning_rate=0.001, momentum=0.9)
 
-    plt.title(f'{metric.capitalize()} Over Epochs')
-    plt.xlabel('Epochs')
-    plt.ylabel(ylabel)
-    plt.legend()
-    plt.show()
+model.compile(loss=mean_euclidean_error, optimizer=sgd, metrics=['RootMeanSquaredError'])
 
+model.fit(x_train, y_train, epochs=10000, batch_size=x_train.shape[0], verbose=2)
 
-# Example usage
-history = {'training': [{'loss': 123, 'accuracy': 0.7, 'abc': 0.1}, {'loss': 0.3, 'accuracy': 0.8, 'abc': 0.1}],
-           'validation': [{'loss': 0.9, 'accuracy': 0.72, 'abc': 0.1}, {'loss': 0.2, 'accuracy': 0.21, 'abc': 0.1}]}
+# model.summary()
 
-data = convert_history_format(history)
-
-sns.set_context("notebook")
-sns.set_theme(style="whitegrid")
-
-# Iterate over metrics
-for metric in data.keys():
-    epochs = np.arange(1, len(data[metric]['training']) + 1)
-    plot_metric_over_epochs(data, metric, f'{metric.capitalize()} Value')
+errors = model.evaluate(x_test, y_test)
+print(errors)

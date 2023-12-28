@@ -3,20 +3,20 @@ from src.main.dataset_handler import get_monk
 from src.main.models.layers.dense import Dense
 from src.main.models.model import Model
 from src.main.optimizer import SGD
-from src.main.callback import EarlyStopping
+from src.main.regularizer import L2
 from src.main.utils import plot_history
 
 x_train, y_train, x_test, y_test = get_monk(1)
 
 model = Model()
-model.add(Dense(17, 4, activation="relu"))
-model.add(Dense(4, 1, activation="sigmoid"))
+model.add(Dense(17, 4, activation="relu", weight_initializer="random_normal", bias_initializer="random_normal"))
+model.add(Dense(4, 1, activation="sigmoid", weight_initializer="random_normal", bias_initializer="random_normal"))
 
-optimizer = SGD(learning_rate=0.1, momentum=0.5)
-early_stopping = EarlyStopping(patience=20, start_from_epoch=200, delta=0.0001, monitor="loss", restore_best_weights=True, verbose=True)
+optimizer = SGD(learning_rate=0.5, momentum=0.1)
+l2 = L2(0.002)
 
-model.compile(optimizer=optimizer, callback=early_stopping, loss="mean_squared_error", metrics=["binary_accuracy"])
+model.compile(optimizer=optimizer, loss="mean_squared_error", metrics=["binary_accuracy"])
 
-a, history = model.fit(x_train, y_train, x_test, y_test, epochs=5001, batch_size=12, verbose=True)
+_, history = model.fit(x_train, y_train, x_test, y_test, epochs=1000, batch_size=16, verbose=True)
 
 plot_history(history)

@@ -85,7 +85,7 @@ class Model:
         self.metrics = metrics
         self.regularizer = regularizer
 
-    def fit(self, x_train: np.ndarray, y_train: np.ndarray, x_val: np.ndarray, y_val: np.ndarray,
+    def fit(self, x_train: np.ndarray, y_train: np.ndarray, x_val: np.ndarray = None, y_val: np.ndarray = None,
             epochs=256, batch_size=20, verbose=False):
         """
         Fits the model using the training data.
@@ -120,12 +120,9 @@ class Model:
             if x_val is not None:
                 val_score = self.evaluate(x_val, y_val)
                 validation_scores.append(val_score)
-            
+
             # early stopping logic
             if self.callback is not None and x_val is not None:
-
-                val_score = self.evaluate(x_val, y_val)
-                validation_scores.append(val_score)
 
                 self.callback.increment_counter()
                 if self.callback.get_restore_best_weights():
@@ -236,7 +233,7 @@ class Model:
         model_score[self.loss.to_string()] = self.loss.forward(y_pred, y)
 
         return model_score
-    
+
     def initialize_weights(self):
         """
         Initializes the weights of the model.
@@ -252,7 +249,7 @@ class Model:
         print(f"Optimizer: {self.optimizer.to_string()}")
         print(f"Loss: {self.loss.to_string()}")
         print(f"Metrics: {list(map(lambda x: x.to_string(), self.metrics))}")
-        print(f"Regularizer: {self.regularizer.to_string()}")
+        print(f"Regularizer: {repr(self.regularizer)}")
 
         print(" ")
         for layer in self.layers:
