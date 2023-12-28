@@ -59,16 +59,16 @@ class SGD(Optimizer):
     def get_learning_rate(self):
         return self.learning_rate
 
-    def update_parameters(self, layer: Layer, regularizer: Regularizer = None):
+    def update_parameters(self, layer: Layer, regularizer: Regularizer = None, batch_size: int = 1):
         """
-        updating the weights of a layer
-        
+        Updating the weights of a layer
+
         :param layer: the layer with weights to update
         :param regularizer: the regularizer to use
+        :param batch_size: the batch size
         """
 
         delta = layer.get_delta()
-        batch_size = delta.shape[0]
 
         dW = self.learning_rate * np.dot(layer.get_input().T, delta) / batch_size
         db = self.learning_rate * delta.sum(axis=0) / batch_size

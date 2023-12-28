@@ -9,7 +9,7 @@ metrics: [['binary_accuracy']]
 epochs: [1000]
 batch_size: [8, 16, 32]
 
-#early stopping parameters:
+# early stopping parameters:
 early_stopping: [False, True]
 patience: [10, 20, 30]
 start_from_epoch: [50, 100, 200]

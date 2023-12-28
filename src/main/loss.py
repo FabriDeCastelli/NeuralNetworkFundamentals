@@ -37,10 +37,10 @@ class MSE(Loss):
     """
 
     def forward(self, y_pred, y_true):
-        return np.mean((y_pred - y_true) ** 2)
+        return np.mean(np.sum(np.square(np.subtract(y_pred, y_true)), axis=1), axis=0)
 
     def backward(self, y_pred, y_true):
-        return 2 * (y_pred - y_true) / y_true.size
+        return 2 * np.subtract(y_pred, y_true)
 
     def to_string(self):
         return "mean_squared_error_loss"
@@ -52,10 +52,10 @@ class MEE(Loss):
     """
 
     def forward(self, y_pred, y_true):
-        return np.mean(np.linalg.norm(y_pred - y_true, axis=1))
+        return np.sqrt(np.mean(np.sum(np.square(np.subtract(y_pred, y_true)), axis=1), axis=0))
 
     def backward(self, y_pred, y_true):
-        return y_pred - y_true / y_pred.shape[0]
+        return np.subtract(y_pred, y_true) / np.linalg.norm(y_pred - y_true, ord=2)
 
     def to_string(self):
         return "mean_euclidean_error"
@@ -98,7 +98,7 @@ loss_dict = {
     "binary_cross_entropy": BinaryCrossEntropy()
 }
 
-#hash map to know which metric to maximize and which to minimize (always minimize the loss)
+# hash map to know which metric to maximize and which to minimize (always minimize the loss)
 loss_map = {
     "minimize": ["loss"]
 }

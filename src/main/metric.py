@@ -27,7 +27,7 @@ class RootMeanSquaredError(Metric):
     """
 
     def evaluate(self, y_pred, y_true):
-        return np.sqrt(np.mean((y_pred - y_true) ** 2))
+        return np.sqrt(np.mean(np.sum(np.square(np.subtract(y_pred, y_true)), axis=1), axis=0))
 
     def to_string(self):
         return "root_mean_squared_error"
@@ -64,7 +64,7 @@ metrics_dict = {
     "binary_accuracy": BinaryAccuracy(),
 }
 
-#hash map to know which metric to maximize and which to minimize
+# hash map to know which metric to maximize and which to minimize
 metrics_map = {
     "maximize": ["accuracy", "binary_accuracy"],
     "minimize": ["root_mean_squared_error"],

@@ -14,7 +14,7 @@ class Dense(Layer):
             self,
             input_size: int,
             output_size: int,
-            weight_initializer: str | Initializer = 'random_normal',
+            weight_initializer: str | Initializer = 'glorot_uniform',
             bias_initializer: str | Initializer = 'zeros',
             activation: str | Activation = 'identity',
     ):

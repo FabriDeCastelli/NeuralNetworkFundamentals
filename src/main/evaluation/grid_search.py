@@ -153,7 +153,7 @@ class RandomGridSearch(GridSearch):
 
 
 if __name__ == '__main__':
-    params = load_hparams("nn")
+    params = load_hparams("monk1")
     grid_search = RandomGridSearch(params)
     grid_search.run_search(None, None, None)
     # print(grid_search.get_parameters_combination(2))

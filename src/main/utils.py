@@ -1,9 +1,12 @@
 from pathlib import Path
 from typing import Any
 
+import sns
 import yaml
 import numpy as np
 import pandas as pd
+from matplotlib import pyplot as plt
+import seaborn as sns
 
 from config.config import HPARAMS_ROOT, PROJECT_FOLDER_PATH
 from src.main.activation import activation_dict
@@ -107,38 +110,72 @@ def compute_metrics(model, train_mean, train_std, val_mean, val_std, test_mean, 
     """
     take the model and the scores on the set and create a pandas dataframe with the results
     """
-    def round_number(x,y,z):
+
+    def round_number(x, y, z):
         return [round(x, 4), round(y, 4), round(z, 4)]
-    
+
     means = []
     stds = []
     sets = ["Training", "Validation", "Test"]
-    
+
     metrics = [metric.to_string() for metric in model.get_metrics() + [model.get_loss()]]
 
     for metric in metrics:
         means.extend(round_number(train_mean[metric], val_mean[metric], test_mean[metric]))
         stds.extend(round_number(train_std[metric], val_std[metric], test_std[metric]))
-        
+
     metrics = [el for el in metrics for _ in range(3)]
-    
-    data = {'Metrics': metrics, 'Set': sets*(len(metrics)//3), 'Mean': means, 'Std': stds}
+
+    data = {'Metrics': metrics, 'Set': sets * (len(metrics) // 3), 'Mean': means, 'Std': stds}
     df = pd.DataFrame(data)
     return df
 
-def log_experiment(exp_dir, model, train_mean, train_std, val_mean, val_std, test_mean, test_std):
-    """Logs the results of an experiments on a csv file inside exp_dir
+
+def log_experiment(exp_dir, model, train_mean, train_std, val_mean, val_std, test_mean, test_std, history=None):
+    """
+    Logs the results of an experiments on a csv file inside exp_dir
+
+    :param exp_dir: the path of the experiment directory
+    :param model: the model used for the experiment
+    :param train_mean: the mean of the scores on the training set
+    :param train_std: the standard deviation of the scores on the training set
+    :param val_mean: the mean of the scores on the validation set
+    :param val_std: the standard deviation of the scores on the validation set
+    :param test_mean: the mean of the scores on the test set
+    :param test_std: the standard deviation of the scores on the test set
     """
     metrics = compute_metrics(model, train_mean, train_std, val_mean, val_std, test_mean, test_std)
     metrics.to_csv(exp_dir / "metrics.csv", index=False, decimal=',')
+    if history is not None:
+        plot_history(history)
+        plt.savefig(exp_dir / "accuracy.pdf")
+
 
 def setup_experiment(name: str) -> Path:
-    """Initializes experiment by creating the proper directory
+    """
+    Initializes experiment by creating the proper directory
+
     :param name: the name of the experiment as string
-    
     :return: the path of the experiment directory
     """
     root = PROJECT_FOLDER_PATH / Path("experiments")
     exp_dir = root / name
     exp_dir.mkdir(exist_ok=True, parents=True)
     return exp_dir
+
+
+def plot_history(history):
+    sns.set_context("notebook")
+    sns.set_theme(style="whitegrid")
+
+    for metric in history.keys():
+        epochs = np.arange(1, len(history[metric]['training']) + 1)
+        plt.figure(figsize=(8, 5))
+        plt.plot(epochs, history[metric]['training'], label='Training', marker='o')
+        plt.plot(epochs, history[metric]['validation'], label='Validation', marker='o')
+
+        plt.title(f'{metric.capitalize()} Over Epochs')
+        plt.xlabel('Epochs')
+        plt.ylabel(f'{metric.capitalize()} Value')
+        plt.legend()
+        plt.show()

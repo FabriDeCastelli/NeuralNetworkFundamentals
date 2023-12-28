@@ -11,7 +11,7 @@ def print_score(mean, std):
 
 x_train, y_train, x_test, y_test = get_monk(1)
 
-hyperparameters = load_hparams("nn")
+hyperparameters = load_hparams("monk1")
 grid_search = RandomGridSearch(hyperparameters)
 train_mean, train_std, val_mean, val_std, test_mean, test_std, models = (
     double_Kfold_CV(x_train, y_train, grid_search, 5, verbose=True)

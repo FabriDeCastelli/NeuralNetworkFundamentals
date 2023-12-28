@@ -24,10 +24,10 @@ class Model:
 
     def get_loss(self):
         return self.loss
-    
+
     def get_metrics(self):
         return self.metrics
-    
+
     def add(self, layer: Layer):
         """
         Adds a layer to the model.
@@ -48,6 +48,7 @@ class Model:
         Prepares the model for fitting with an optimizer, a loss and a list of metrics.
 
         :param optimizer: the optimizer to use
+        :param callback: the callback to use
         :param loss: the loss to use
         :param metrics: the list of metrics to use
         :param regularizer: the regularizer to use
@@ -56,7 +57,7 @@ class Model:
             optimizer = optimizer_dict.get(optimizer)
             if optimizer is None:
                 raise ValueError("Invalid optimizer")
-          
+
         if isinstance(callback, str):
             callback = callback_dict.get(callback)
             if callback is None:
@@ -84,7 +85,7 @@ class Model:
         self.metrics = metrics
         self.regularizer = regularizer
 
-    def fit(self, x_train: np.ndarray, y_train: np.ndarray, x_val: np.ndarray, y_val: np.ndarray, 
+    def fit(self, x_train: np.ndarray, y_train: np.ndarray, x_val: np.ndarray, y_val: np.ndarray,
             epochs=256, batch_size=20, verbose=False):
         """
         Fits the model using the training data.
@@ -97,10 +98,12 @@ class Model:
         :param batch_size: the size of the batch to process at each epoch
         :param verbose: whether to print the progress of the training
         """
-                
+
+        validation_scores = []
+        training_scores = []
+
         for epoch in range(epochs):
             for batch in range(len(x_train) // batch_size):
-                
                 x_batch = x_train[batch * batch_size: (batch + 1) * batch_size]
                 y_batch = y_train[batch * batch_size: (batch + 1) * batch_size]
 
@@ -109,35 +112,60 @@ class Model:
                 x_batch = x_batch[idx]
                 y_batch = y_batch[idx]
 
-                self.train_one_step(x_batch, y_batch)
-               
-            #early stopping logic                    
-            if(self.callback is not None and x_val is not None):
+                self.train_one_step(x_batch, y_batch, batch_size)
+
+            training_scores.append(self.evaluate(x_train, y_train))
+
+            # early stopping logic
+            if self.callback is not None and x_val is not None:
+
                 val_score = self.evaluate(x_val, y_val)
+                validation_scores.append(val_score)
+
                 self.callback.increment_counter()
-                if(self.callback.get_restore_best_weights()):
+                if self.callback.get_restore_best_weights():
                     self.callback.update_best_model(self, val_score)
-                self.callback.update_val_history(self, val_score)        
-                                
-                if(self.callback.check_stop()):
+                self.callback.update_val_history(self, val_score)
+
+                if self.callback.check_stop():
                     print("Early Stopping Triggered at iter: ", self.callback.get_counter())
-                    if(self.callback.get_restore_best_weights()):
-                        self = self.callback.get_best_model()
                     self.callback.reset()
                     break
-        
-            if verbose and epoch % 50 == 0:
-                print(f"Epoch {epoch + 1}/{epochs} - Loss: {self.evaluate(x_train, y_train)}")
-        
-        if(self.callback is not None):
-            self.callback.reset()
 
-    def train_one_step(self, x: np.ndarray, y: np.ndarray):
+            if verbose and epoch % 50 == 0:
+                print(f"Epoch {epoch + 1}/{epochs} - {self.evaluate(x_train, y_train)}")
+
+        def convert_history_format(history):
+            result = {}
+
+            for key, values in history.items():
+                for entry in values:
+                    for subkey, subvalue in entry.items():
+                        if subkey not in result:
+                            result[subkey] = {}
+                        if key not in result[subkey]:
+                            result[subkey][key] = []
+                        result[subkey][key].append(subvalue)
+
+            return result
+
+        history = convert_history_format({
+            "training": training_scores,
+            "validation": validation_scores
+        })
+
+        if self.callback.get_restore_best_weights():
+            return self.callback.get_best_model(), history
+
+        return self, history
+
+    def train_one_step(self, x: np.ndarray, y: np.ndarray, batch_size):
         """
         Trains the model on one batch of data.
 
         :param x: the input data
         :param y: the target data
+        :param batch_size: the size of the batch
         """
 
         # Forward Pass
@@ -151,7 +179,7 @@ class Model:
 
         # Update Parameters
         for layer in reversed(self.layers):
-            self.optimizer.update_parameters(layer, self.regularizer)
+            self.optimizer.update_parameters(layer, self.regularizer, batch_size)
 
     def forward(self, x: np.ndarray) -> np.ndarray:
         """
@@ -184,13 +212,13 @@ class Model:
         """
         return self.forward(x)
 
-    def evaluate(self, x: np.ndarray, y: np.ndarray) -> np.ndarray:
+    def evaluate(self, x: np.ndarray, y: np.ndarray) -> dict:
         """
         Evaluates the model on the input data_for_testing.
 
         :param x: the input data_for_testing
         :param y: the target data_for_testing
-        :return: the value of the loss and the metrics
+        :return: a dictionary storing the value of the metrics and the loss
         """
 
         y_pred = self.predict(x)
@@ -200,7 +228,7 @@ class Model:
         for metric in self.metrics:
             model_score[metric.to_string()] = metric.evaluate(y_pred, y)
 
-        model_score[self.get_loss().to_string()] = self.loss.forward(y_pred, y)
+        model_score['loss'] = self.loss.forward(y_pred, y)
 
         return model_score
 
@@ -212,6 +240,8 @@ class Model:
         print(f"Optimizer: {self.optimizer.to_string()}")
         print(f"Loss: {self.loss.to_string()}")
         print(f"Metrics: {list(map(lambda x: x.to_string(), self.metrics))}")
+        print(f"Regularizer: {self.regularizer.to_string()}")
+
         print(" ")
         for layer in self.layers:
             layer.summary()
