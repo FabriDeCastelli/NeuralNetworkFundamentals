@@ -39,7 +39,7 @@ def holdout_CV(X:np.ndarray,
     
     model.initialize_weights()
     
-    model, history = model.fit(x_train, y_train, x_test, x_test, epoch, batch_size, True)
+    model, history = model.fit(x_train, y_train, x_test, x_test, epoch, batch_size, False)
     #train_score = model.evaluate(x_train, y_train)
             
     test_score = model.evaluate(x_test, y_test)
