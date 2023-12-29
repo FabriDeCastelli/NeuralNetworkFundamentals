@@ -9,7 +9,7 @@ from sklearn.model_selection import train_test_split
 def holdout_CV(X: np.ndarray,
                y: np.ndarray,
                grid_search: GridSearch,
-               split: float = 0.2,
+               split: float = 0.3,
                verbose: bool = False
                ):
     """
@@ -29,21 +29,27 @@ def holdout_CV(X: np.ndarray,
     x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=split, random_state=1)
 
     """train_mean, train_std, val_mean, val_std,"""
-    ((train_mean, train_std), (val_mean, val_std)), model, params = grid_search.run_search(x_train, y_train, verbose)
-    epoch, batch_size = params
-
-    # train_score = {loss: 0}
+    ((train_mean, train_std), (val_mean, val_std)), model, params, histories = grid_search.run_search(x_train, y_train, verbose)
+    _, batch_size = params
+    
+    for i, history in enumerate(histories):
+        print("---History of fold: ", i+1)
+        plot_history(history)
+    
+    """print("------- BEFORE REFIT -------")
 
     model.initialize_weights()
+    
+    print("TRAIN MEAN:", train_mean[model.get_loss().to_string()])
+    print("TEST SCORE:" , model.evaluate(x_test, y_test))
 
-    model, history = model.fit(x_train, y_train, x_test, y_test, epoch, batch_size, True)
-    # train_score = model.evaluate(x_train, y_train)
-
+    print("------- AFTER REFIT -------")
+    model, history = model.refit(x_train , y_train, x_test, y_test, train_mean, 0.00001, batch_size, True)
+    """ 
     test_score = model.evaluate(x_test, y_test)
-    print(test_score)
+
     for key in test_score.keys():
         test_std[key] = [0]
 
-    plot_history(history)
 
     return train_mean, train_std, val_mean, val_std, test_score, test_std, model

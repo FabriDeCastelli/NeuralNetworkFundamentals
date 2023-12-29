@@ -72,19 +72,21 @@ class GridSearch:
         best_model = None
         best_params = None
         best_scores = None
+        best_history = None
         best_val_loss = np.inf
 
         for res, parameters in results:
-            result, model, _ = res
-            print(result[1][0])
+            result, model, histories = res
+            #print(result[1][0])
             mean_val = result[1][0][model.get_loss().to_string()]
             if mean_val < best_val_loss:
                 best_val_loss = mean_val
                 best_scores = result
                 best_model = model
                 best_params = parameters
+                best_history = histories
 
-        return best_scores, best_model, best_params
+        return best_scores, best_model, best_params, best_history
 
 
 class NestedGridSearch(GridSearch):
@@ -134,7 +136,7 @@ class RandomGridSearch(GridSearch):
             all_params_combination[i] for i in np.random.choice(total_combinations, combinations)
         ]
 
-    def run_search(self, x, y, verbose=False, combinations=10):
+    def run_search(self, x, y, verbose=False, combinations=100):
         parameters_combination = self.get_parameters_combination(combinations=combinations)
         return super().search(x, y, parameters_combination, verbose)
 

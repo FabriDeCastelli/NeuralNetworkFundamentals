@@ -9,14 +9,15 @@ from src.main.utils import plot_history
 x_train, y_train, x_test, y_test = get_monk(1)
 
 model = Model()
-model.add(Dense(17, 4, activation="relu", weight_initializer="random_normal", bias_initializer="random_normal"))
-model.add(Dense(4, 1, activation="sigmoid", weight_initializer="random_normal", bias_initializer="random_normal"))
+model.add(Dense(17, 4, activation="relu", weight_initializer="glorot_uniform", bias_initializer="zeros"))
+model.add(Dense(4, 1, activation="sigmoid", weight_initializer="glorot_uniform", bias_initializer="zeros"))
 
-optimizer = SGD(learning_rate=0.5, momentum=0.1)
-l2 = L2(0.002)
+optimizer = SGD(learning_rate=0.1, momentum=0.5)
+l2 = L2(0)
 
 model.compile(optimizer=optimizer, loss="mean_squared_error", metrics=["binary_accuracy"])
 
-_, history = model.fit(x_train, y_train, x_test, y_test, epochs=1000, batch_size=16, verbose=True)
+_, history = model.fit(x_train, y_train, x_test, y_test, epochs=500, batch_size=8, verbose=False)
 
 plot_history(history)
+

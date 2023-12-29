@@ -16,7 +16,7 @@ from src.main.metric import metrics_dict
 from src.main.models.layers.dense import Dense
 from src.main.models.model import Model
 from src.main.optimizer import SGD
-from src.main.regularizer import Regularizer
+from src.main.regularizer import Regularizer, regularizer_dict
 
 
 def read_yaml(path: str | Path) -> dict[str, Any]:
@@ -78,6 +78,8 @@ def create_model(
     metrics_object = []
     for metric in metrics:
         metrics_object.append(metrics_dict.get(metric))
+        
+    regularizer = regularizer_dict.get(regularizer)
 
     model.compile(sgd, loss, metrics_object, callback, regularizer)
     return model
@@ -171,6 +173,11 @@ def setup_experiment(name: str) -> Path:
 
 
 def plot_history(history):
+    """
+    plot the history of the training and the test set
+    
+    :param history: the history of the training and test set
+    """
     sns.set_context("notebook")
     sns.set_theme(style="whitegrid")
 
@@ -178,10 +185,13 @@ def plot_history(history):
         epochs = np.arange(1, len(history[metric]['training']) + 1)
         plt.figure(figsize=(8, 5))
         plt.plot(epochs, history[metric]['training'], label='Training')
-        plt.plot(epochs, history[metric]['validation'], label='Validation')
-
+        if("test" in history[metric].keys()):
+            plt.plot(epochs, history[metric]['test'], label='Test') #, color='#C80000', linestyle='--') 
+        else:
+            plt.plot(epochs, history[metric]['validation'], label='Validation') 
         plt.title(f'{metric.capitalize()} Over Epochs')
         plt.xlabel('Epochs')
         plt.ylabel(f'{metric.capitalize()} Value')
         plt.legend()
         plt.show()
+ 

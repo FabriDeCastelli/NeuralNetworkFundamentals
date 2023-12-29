@@ -1,6 +1,6 @@
 import numpy as np
 
-from src.main.utils import mean_std_scores
+from src.main.utils import mean_std_scores, shuffle_data
 
 
 def Kfold_CV(X, y, model, k=5, epochs=500, batch_size=20, verbose=False):
@@ -18,11 +18,13 @@ def Kfold_CV(X, y, model, k=5, epochs=500, batch_size=20, verbose=False):
     :return: mean and std of train scores as dictionary, mean and std of validation scores as dictionary
     """
 
+    X, y = shuffle_data(X, y) 
     x_fold = np.array_split(X, k)
     y_fold = np.array_split(y, k)
 
     train_scores = []
     val_scores = []
+    histories = []
 
     for i in range(k):
 
@@ -32,9 +34,12 @@ def Kfold_CV(X, y, model, k=5, epochs=500, batch_size=20, verbose=False):
         x_train, x_val = np.concatenate(x_fold[:i] + x_fold[i + 1:]), x_fold[i]
         y_train, y_val = np.concatenate(y_fold[:i] + y_fold[i + 1:]), y_fold[i]
 
+        model.initialize_weights()
+        
         model, history = model.fit(x_train, y_train, x_val, y_val, epochs, batch_size, verbose)
         
         train_scores.append(model.evaluate(x_train, y_train))
         val_scores.append(model.evaluate(x_val, y_val))
-        
-    return (mean_std_scores(train_scores), mean_std_scores(val_scores)), model, history
+        histories.append(history)
+                
+    return (mean_std_scores(train_scores), mean_std_scores(val_scores)), model, histories
