@@ -197,4 +197,4 @@ def plot_history(history, exp_dir = None):
         plt.legend()
         if exp_dir is not None:
             plt.savefig(exp_dir / f'{metric}.pdf')
-        plt.show()
+        #plt.show()
