@@ -21,3 +21,5 @@ _, history = model.fit(x_train, y_train, x_test, y_test, epochs=500, batch_size=
 
 plot_history(history)
 
+print("TEST SCORE:", model.evaluate(x_test, y_test))
+

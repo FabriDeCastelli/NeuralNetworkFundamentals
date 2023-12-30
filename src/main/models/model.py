@@ -164,74 +164,6 @@ class Model:
 
         return self, history
 
-
-    def refit(self, x_train: np.ndarray, y_train: np.ndarray, x_test: np.ndarray, y_test: np.ndarray, train_mean, delta = 0.001, batch_size=20, verbose=False):
-        """
-        Fits the model using the training data.
-
-        :param x_train: the input data for retraining
-        :param y_train: the target data for retraining
-        :param x_test: the input data for test
-        :param y_test: the target data for test
-        :param train_mean: the mean of the training phase
-        :param delta: the minimum difference between the training and test loss to stop the retraining
-        :param batch_size: the size of the batch to process at each step until convergence
-        :param verbose: whether to print the progress of the retraining
-        """
-
-        test_scores = []
-        training_scores = []
-        iterations = 0
-
-        while train_mean[self.get_loss().to_string()] - self.evaluate(x_train, y_train)[self.get_loss().to_string()] < delta:
-            iterations += 1
-            """if(iterations == 2000):
-                break"""
-            for batch in range(len(x_train) // batch_size):
-                x_batch = x_train[batch * batch_size: (batch + 1) * batch_size]
-                y_batch = y_train[batch * batch_size: (batch + 1) * batch_size]
-
-                # shuffle the data
-                idx = np.random.permutation(len(x_batch))
-                x_batch = x_batch[idx]
-                y_batch = y_batch[idx]
-
-                self.train_one_step(x_batch, y_batch, batch_size)
-
-            training_scores.append(self.evaluate(x_train, y_train))
-
-            test_score = {}
-            if x_test is not None:
-                test_score = self.evaluate(x_test, y_test)
-                test_scores.append(test_score)
-
-
-            if verbose and iterations % 50 == 0:
-                print(f"Epoch {iterations} - {self.evaluate(x_train, y_train)}")
-
-        def convert_history_format(history):
-            result = {}
-
-            for key, values in history.items():
-                for entry in values:
-                    for subkey, subvalue in entry.items():
-                        if subkey not in result:
-                            result[subkey] = {}
-                        if key not in result[subkey]:
-                            result[subkey][key] = []
-                        result[subkey][key].append(subvalue)
-
-            return result
-        
-
-        history = convert_history_format({
-            "training": training_scores,
-            "test": test_scores
-        })
-
-        #print("Training Loss:", train_mean[self.get_loss().to_string()])
-        return self, history
-
     def train_one_step(self, x: np.ndarray, y: np.ndarray, batch_size):
         """
         Trains the model on one batch of data.
@@ -310,7 +242,8 @@ class Model:
         Initializes the weights of the model.
         """
         for layer in self.layers:
-            layer.set_weights(layer.get_weights_initializer()((layer.get_input_size(), layer.get_output_size())))
+            layer.reset()
+        
 
     def summary(self):
         """

@@ -97,6 +97,18 @@ class Dense(Layer):
         print("Bias initializer: ", repr(self.bias_initializer))
         print("Activation: ", self.activation.to_string())
         print("Parameters: ", self.weights.shape[0] * self.weights.shape[1] + self.bias.shape[0])
+        
+    def reset(self):
+        """
+        Reset the layer
+        """
+        self.weights = self.weights_initializer((self.input_size, self.output_size))
+        self.bias = self.bias_initializer((self.output_size,))
+        self.input = None
+        self.output = None
+        self.delta = None
+        self.dW = np.zeros((self.input_size, self.output_size))
+        self.db = np.zeros(self.output_size)
 
     # getters and setters
     def get_weights(self):

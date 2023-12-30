@@ -188,7 +188,7 @@ def plot_history(history):
         if("test" in history[metric].keys()):
             plt.plot(epochs, history[metric]['test'], label='Test') #, color='#C80000', linestyle='--') 
         else:
-            plt.plot(epochs, history[metric]['validation'], label='Validation') 
+            plt.plot(epochs, history[metric]['validation'], label='Validation') #, color='#C80000', linestyle='--') 
         plt.title(f'{metric.capitalize()} Over Epochs')
         plt.xlabel('Epochs')
         plt.ylabel(f'{metric.capitalize()} Value')

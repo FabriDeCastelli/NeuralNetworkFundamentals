@@ -31,6 +31,12 @@ class Layer:
         Prints a string representation of the layer.
         """
         raise NotImplementedError()
+    
+    def reset(self):
+        """
+        Reset the layer
+        """
+        raise NotImplementedError()
 
     # getters and setters
     def get_weights(self):
