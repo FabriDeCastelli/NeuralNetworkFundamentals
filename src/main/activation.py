@@ -26,7 +26,7 @@ class Activation:
         """
         raise NotImplementedError()
 
-    def to_string(self):
+    def __repr__(self):
         raise NotImplementedError()
 
 
@@ -41,8 +41,8 @@ class ReLu(Activation):
     def backward(self, x):
         return np.where(x > 0, 1, 0)
 
-    def to_string(self):
-        return "ReLu"
+    def __repr__(self):
+        return self.__class__.__name__
 
 
 class Identity(Activation):
@@ -56,8 +56,8 @@ class Identity(Activation):
     def backward(self, x):
         return 1
 
-    def to_string(self):
-        return "Identity"
+    def __repr__(self):
+        return self.__class__.__name__
 
 
 class Sigmoid(Activation):
@@ -71,8 +71,8 @@ class Sigmoid(Activation):
     def backward(self, x):
         return self.forward(x) * (1 - self.forward(x))
 
-    def to_string(self):
-        return "Sigmoid"
+    def __repr__(self):
+        return self.__class__.__name__
 
 
 class Tanh(Activation):
@@ -86,8 +86,8 @@ class Tanh(Activation):
     def backward(self, x):
         return 1 - np.tanh(x) ** 2
 
-    def to_string(self):
-        return "Tanh"
+    def __repr__(self):
+        return self.__class__.__name__
 
 
 activation_dict = {

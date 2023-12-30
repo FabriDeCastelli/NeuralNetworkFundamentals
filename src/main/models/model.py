@@ -137,7 +137,7 @@ class Model:
 
             if verbose and epoch % 50 == 0:
                 print(f"Epoch {epoch + 1}/{epochs} \tTraining - {self.evaluate(x_train, y_train)}")
-                if(x_val is not None):
+                if x_val is not None:
                     print(f"\t\tValidation - {self.evaluate(x_val, y_val)}")
 
         def convert_history_format(history):
@@ -231,9 +231,9 @@ class Model:
         model_score = {}
 
         for metric in self.metrics:
-            model_score[metric.to_string()] = metric.evaluate(y_pred, y)
+            model_score[repr(metric)] = metric.evaluate(y_pred, y)
 
-        model_score[self.loss.to_string()] = self.loss.forward(y_pred, y)
+        model_score[repr(self.loss)] = self.loss.forward(y_pred, y)
 
         return model_score
 
@@ -243,16 +243,16 @@ class Model:
         """
         for layer in self.layers:
             layer.reset()
-        
+
 
     def summary(self):
         """
         Prints a summary of the model.
         """
         print("\nModel Summary:")
-        print(f"Optimizer: {self.optimizer.to_string()}")
-        print(f"Loss: {self.loss.to_string()}")
-        print(f"Metrics: {list(map(lambda x: x.to_string(), self.metrics))}")
+        print(f"Optimizer: {repr(self.optimizer)}")
+        print(f"Loss: {repr(self.loss)}")
+        print(f"Metrics: {list(map(lambda x: repr(x), self.metrics))}")
         print(f"Regularizer: {repr(self.regularizer)}")
 
         print(" ")

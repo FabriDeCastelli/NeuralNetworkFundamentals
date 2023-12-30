@@ -32,6 +32,9 @@ class Loss:
 
         raise NotImplementedError()
 
+    def __repr__(self):
+        raise NotImplementedError()
+
 
 class MSE(Loss, Metric):
     """
@@ -44,7 +47,7 @@ class MSE(Loss, Metric):
     def backward(self, y_pred, y_true):
         return np.subtract(y_pred, y_true)
 
-    def to_string(self):
+    def __repr__(self):
         return "mean_squared_error"
 
 
@@ -59,8 +62,11 @@ class MEE(Loss, Metric):
     def backward(self, y_pred, y_true):
         return np.subtract(y_pred, y_true) / self.forward(y_pred, y_true)
 
-    def to_string(self):
-        return "mean_euclidean_error_loss"
+    def evaluate(self, y_pred, y_true):
+        return self.forward(y_pred, y_true)
+
+    def __repr__(self):
+        return "mean_euclidean_error"
 
 
 class CrossEntropy(Loss):
@@ -74,7 +80,7 @@ class CrossEntropy(Loss):
     def backward(self, y_pred, y_true):
         return y_pred - y_true / y_pred.shape[0]
 
-    def to_string(self):
+    def __repr__(self):
         return "cross_entropy"
 
 
@@ -89,13 +95,13 @@ class BinaryCrossEntropy(Loss):
     def backward(self, y_pred, y_true):
         return y_pred - y_true / y_pred.shape[0]
 
-    def to_string(self):
+    def __repr__(self):
         return "binary_cross_entropy"
 
 
 loss_dict = {
     "mean_squared_error": MSE(),
-    "mean_euclidean_error_loss": MEE(),
+    "mean_euclidean_error": MEE(),
     "cross_entropy": CrossEntropy(),
     "binary_cross_entropy": BinaryCrossEntropy()
 }

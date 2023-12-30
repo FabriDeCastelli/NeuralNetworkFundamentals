@@ -63,9 +63,9 @@ class GridSearch:
             model = create_model(**parameters)
             batch_size = parameters['batch_size']
             epochs = parameters['epochs']
-            return Kfold_CV(x, y, model, 5, epochs, batch_size, verbose), (epochs, batch_size)
+            return Kfold_CV(x, y, model, 7, epochs, batch_size, verbose), (epochs, batch_size)
 
-        results = Parallel(n_jobs=-1)(
+        results = Parallel(n_jobs=7)(
             delayed(run)(parameters, verbose) for parameters in parameters_combination
         )
 
@@ -77,8 +77,8 @@ class GridSearch:
 
         for res, parameters in results:
             result, model, histories = res
-            #print(result[1][0])
-            mean_val = result[1][0][model.get_loss().to_string()]
+            # print(result[1][0])
+            mean_val = result[1][0][repr(model.get_loss())]
             if mean_val < best_val_loss:
                 best_val_loss = mean_val
                 best_scores = result

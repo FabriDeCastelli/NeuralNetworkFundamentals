@@ -23,7 +23,7 @@ class Optimizer:
 
         raise NotImplementedError()
 
-    def to_string(self):
+    def __repr__(self):
         raise NotImplementedError()
 
     def get_learning_rate(self):
@@ -46,7 +46,7 @@ class SGD(Optimizer):
         self.learning_rate = learning_rate
         self.momentum = momentum
 
-    def to_string(self):
+    def __repr__(self):
         return (
                 "Stochastic Gradient Descent"
                 + f"\nLearning rate: {self.learning_rate}"

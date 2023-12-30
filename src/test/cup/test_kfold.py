@@ -18,7 +18,7 @@ model.add(Dense(16, 3))
 
 optimizer = SGD(learning_rate=0.0005, momentum=0.7)
 
-model.compile(optimizer=optimizer, loss='mean_euclidean_error_loss', metrics=['root_mean_squared_error'])
+model.compile(optimizer=optimizer, loss='mean_euclidean_error', metrics=['root_mean_squared_error'])
 
 
 (train_score, val_score), model, histories = Kfold_CV(x_train, y_train, model, 7, 1000, 16, False)

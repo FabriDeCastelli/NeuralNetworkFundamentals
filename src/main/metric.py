@@ -6,9 +6,6 @@ class Metric:
     Base class for evaluation metrics
     """
 
-    def to_string(self):
-        raise NotImplementedError()
-
     def evaluate(self, y_pred, y_true):
         """
         computes the error of the prediction.
@@ -20,6 +17,9 @@ class Metric:
         """
         raise NotImplementedError()
 
+    def __repr__(self):
+        raise NotImplementedError()
+
 
 class RootMeanSquaredError(Metric):
     """
@@ -29,7 +29,7 @@ class RootMeanSquaredError(Metric):
     def evaluate(self, y_pred, y_true):
         return np.sqrt(np.mean(np.sum(np.square(np.subtract(y_pred, y_true)), axis=1), axis=0))
 
-    def to_string(self):
+    def __repr__(self):
         return "root_mean_squared_error"
 
 
@@ -41,7 +41,7 @@ class Accuracy(Metric):
     def evaluate(self, y_pred, y_true):
         return np.mean(np.argmax(y_pred, axis=1) == np.argmax(y_true, axis=1))
 
-    def to_string(self):
+    def __repr__(self):
         return "accuracy"
 
 
@@ -54,14 +54,14 @@ class BinaryAccuracy(Metric):
         y_pred = np.where(y_pred > threshold, 1, 0)
         return np.mean(y_pred == y_true)
 
-    def to_string(self):
+    def __repr__(self):
         return "binary_accuracy"
 
 
 metrics_dict = {
     "root_mean_squared_error": RootMeanSquaredError(),
     "accuracy": Accuracy(),
-    "binary_accuracy": BinaryAccuracy(),
+    "binary_accuracy": BinaryAccuracy()
 }
 
 # hash map to know which metric to maximize and which to minimize

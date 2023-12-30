@@ -1,3 +1,4 @@
+import numpy as np
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.optimizers.legacy import SGD
@@ -35,9 +36,13 @@ sgd = SGD(learning_rate=0.001, momentum=0.9)
 
 model.compile(loss=mean_euclidean_error, optimizer=sgd, metrics=['RootMeanSquaredError'])
 
-model.fit(x_train, y_train, epochs=10000, batch_size=x_train.shape[0], verbose=2)
+# model.fit(x_train, y_train, epochs=10000, batch_size=x_train.shape[0], verbose=2)
 
 # model.summary()
 
 errors = model.evaluate(x_test, y_test)
 print(errors)
+
+
+x = np.ndarray(shape=(2, 10), dtype=float, order='F')
+print(x)

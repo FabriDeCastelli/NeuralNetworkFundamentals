@@ -89,7 +89,7 @@ def initialize_score(model):
     """initialize all the scores of the model to -1"""
     model_score = {"loss": float('inf')}
     for metric in model.metrics:
-        model_score[metric.to_string()] = -1
+        model_score[repr(metric)] = -1
 
     return model_score
 
@@ -125,7 +125,7 @@ def compute_metrics(model, train_mean, train_std, val_mean, val_std, test_mean, 
     stds = []
     sets = ["Training", "Validation", "Test"]
 
-    metrics = [metric.to_string() for metric in model.get_metrics() + [model.get_loss()]]
+    metrics = [repr(metric) for metric in model.get_metrics() + [model.get_loss()]]
 
     for metric in metrics:
         means.extend(round_number(train_mean[metric], val_mean[metric], test_mean[metric]))
