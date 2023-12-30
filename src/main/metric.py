@@ -30,7 +30,19 @@ class RootMeanSquaredError(Metric):
         return np.sqrt(np.mean(np.sum(np.square(np.subtract(y_pred, y_true)), axis=1), axis=0))
 
     def __repr__(self):
-        return "root_mean_squared_error"
+        return "Root Mean Squared Error"
+
+
+class MEE(Metric):
+    """
+    Mean Euclidean Error loss function
+    """
+
+    def evaluate(self, y_pred, y_true):
+        return np.mean(np.linalg.norm(np.subtract(y_true, y_pred), ord=2, axis=1), axis=0)
+
+    def __repr__(self):
+        return "Mean Euclidean Error"
 
 
 class Accuracy(Metric):
@@ -42,7 +54,7 @@ class Accuracy(Metric):
         return np.mean(np.argmax(y_pred, axis=1) == np.argmax(y_true, axis=1))
 
     def __repr__(self):
-        return "accuracy"
+        return "Accuracy"
 
 
 class BinaryAccuracy(Metric):
@@ -55,17 +67,18 @@ class BinaryAccuracy(Metric):
         return np.mean(y_pred == y_true)
 
     def __repr__(self):
-        return "binary_accuracy"
+        return "Binary Accuracy"
 
 
 metrics_dict = {
     "root_mean_squared_error": RootMeanSquaredError(),
     "accuracy": Accuracy(),
-    "binary_accuracy": BinaryAccuracy()
+    "binary_accuracy": BinaryAccuracy(),
+    "mean_euclidean_error": MEE()
 }
 
 # hash map to know which metric to maximize and which to minimize
 metrics_map = {
     "maximize": ["accuracy", "binary_accuracy"],
-    "minimize": ["root_mean_squared_error"],
+    "minimize": ["root_mean_squared_error", "mean_euclidean_error"],
 }

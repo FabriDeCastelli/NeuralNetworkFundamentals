@@ -1,8 +1,7 @@
 import numpy as np
 
-from .grid_search import GridSearch
-from src.main.utils import shuffle_data, log_experiment
-from src.main.utils import mean_std_scores
+from src.main.utilities.utils import shuffle_data
+from src.main.utilities.utils import mean_std_scores
 
 
 def double_Kfold_CV(X, y, grid_search, k=5,  verbose=False):

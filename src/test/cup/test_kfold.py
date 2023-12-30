@@ -1,11 +1,11 @@
 from sklearn.model_selection import train_test_split
 
-from src.main.dataset_handler import get_cup_dataset
+from src.main.utilities.dataset_handler import get_cup_dataset
 from src.main.evaluation.kfold_cross_validation import Kfold_CV
 from src.main.models.layers.dense import Dense
 from src.main.models.model import Model
 from src.main.optimizer import SGD
-from src.main.utils import plot_history
+from src.main.utilities.utils import plot_history
 
 x_train, y_train, _ = get_cup_dataset()
 x_train, x_test, y_train, y_test = train_test_split(x_train, y_train, test_size=0.2, random_state=42)

@@ -44,7 +44,6 @@ class Range(Initializer):
         return np.random.uniform(min_val, max_val, shape)
 
 
-
 class Zeros(Initializer):
     """
     Zeros initializer.

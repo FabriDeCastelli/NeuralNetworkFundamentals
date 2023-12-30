@@ -1,9 +1,10 @@
-from src.main.dataset_handler import get_monk
+
+from src.main.utilities.dataset_handler import get_monk
 from src.main.models.layers.dense import Dense
 from src.main.models.model import Model
 from src.main.optimizer import SGD
-from src.main.regularizer import L2, L1
-from src.main.utils import log_experiment, setup_experiment
+from src.main.regularizer import L2
+from src.main.utilities.utils import plot_history
 
 x_train, y_train, x_test, y_test = get_monk(3)
 

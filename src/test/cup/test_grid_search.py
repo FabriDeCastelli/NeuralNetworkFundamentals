@@ -1,8 +1,8 @@
 from sklearn.model_selection import train_test_split
 
-from src.main.dataset_handler import get_cup_dataset
+from src.main.utilities.dataset_handler import get_cup_dataset
 from src.main.evaluation.grid_search import RandomGridSearch
-from src.main.utils import load_hparams, plot_history
+from src.main.utilities.utils import load_hparams, plot_history
 
 x_train, y_train, _ = get_cup_dataset()
 x_train, x_test, y_train, y_test = train_test_split(x_train, y_train, test_size=0.1, random_state=42)

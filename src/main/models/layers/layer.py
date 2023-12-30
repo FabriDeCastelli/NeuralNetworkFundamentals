@@ -38,6 +38,12 @@ class Layer:
         """
         raise NotImplementedError()
 
+    def to_dict(self):
+        """
+        Returns a dictionary representing the layer
+        """
+        raise NotImplementedError()
+
     # getters and setters
     def get_weights(self):
         """
