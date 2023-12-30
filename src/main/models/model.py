@@ -1,3 +1,5 @@
+import json
+
 import numpy as np
 from .layers.layer import Layer
 from src.main.metric import Metric, metrics_dict
@@ -244,18 +246,34 @@ class Model:
         for layer in self.layers:
             layer.reset()
 
-
     def summary(self):
         """
         Prints a summary of the model.
         """
-        print("\nModel Summary:")
+        print("-------- Model Summary --------")
+        print("Model Summary:")
         print(f"Optimizer: {repr(self.optimizer)}")
         print(f"Loss: {repr(self.loss)}")
         print(f"Metrics: {list(map(lambda x: repr(x), self.metrics))}")
+        print(f"Callback: {repr(self.callback)}")
         print(f"Regularizer: {repr(self.regularizer)}")
-
         print(" ")
         for layer in self.layers:
             layer.summary()
         print(" ")
+
+    def to_dict(self):
+        model_dict = {
+            "optimizer": repr(self.optimizer),
+            "loss": repr(self.loss),
+            "metrics": [repr(metric) for metric in self.metrics],
+            "callback": repr(self.callback),
+            "regularizer": repr(self.regularizer),
+            "layers": [layer.to_dict() for layer in self.layers]
+        }
+        return model_dict
+
+    def save(self, path: str):
+        model_dict = self.to_dict()
+        with open(path, "w+") as file:
+            json.dump(model_dict, file, indent=4)

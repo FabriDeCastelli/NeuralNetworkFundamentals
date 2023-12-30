@@ -10,6 +10,9 @@ class Callback:
     def __init__(self):
         pass
 
+    def __repr__(self):
+        raise NotImplementedError()
+
 
 class EarlyStopping(Callback):
     """
@@ -124,6 +127,8 @@ class EarlyStopping(Callback):
         self.best_model = None
         self.best_iter_model = 0
 
+    def __repr__(self):
+        return "Early Stopping"
 
 
 callback_dict = {

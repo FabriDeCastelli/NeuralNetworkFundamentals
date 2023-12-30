@@ -1,7 +1,7 @@
 from src.main.evaluation.double_kfold_cross_validation import double_Kfold_CV
 from src.main.evaluation.grid_search import RandomGridSearch
-from src.main.utils import load_hparams
-from src.main.dataset_handler import get_monk
+from src.main.utilities.utils import load_hparams
+from src.main.utilities.dataset_handler import get_monk
 
 
 def print_score(mean, std):

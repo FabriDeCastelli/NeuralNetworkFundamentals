@@ -1,8 +1,7 @@
 import numpy as np
 
-from .grid_search import GridSearch
-from src.main.utils import shuffle_data
-from src.main.utils import plot_history
+from src.main.evaluation.grid_search import GridSearch
+from src.main.utilities.utils import shuffle_data
 from sklearn.model_selection import train_test_split
 
 
@@ -29,10 +28,10 @@ def holdout_CV(X: np.ndarray,
     x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=split, random_state=1)
 
     """train_mean, train_std, val_mean, val_std,"""
-    ((train_mean, train_std), (val_mean, val_std)), model, params, histories = grid_search.run_search(x_train, y_train, verbose)
+    ((train_mean, train_std), (val_mean, val_std)), model, params, histories = grid_search.run_search(x_train, y_train,
+                                                                                                      verbose)
     _, _ = params
-    
-    
+
     """print("------- BEFORE REFIT -------")
 
     model.initialize_weights()
@@ -42,11 +41,10 @@ def holdout_CV(X: np.ndarray,
 
     print("------- AFTER REFIT -------")
     model, history = model.refit(x_train , y_train, x_test, y_test, train_mean, 0.00001, batch_size, True)
-    """ 
+    """
     test_score = model.evaluate(x_test, y_test)
 
     for key in test_score.keys():
         test_std[key] = 0.0
-
 
     return train_mean, train_std, val_mean, val_std, test_score, test_std, model, histories

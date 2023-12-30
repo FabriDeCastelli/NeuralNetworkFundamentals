@@ -1,6 +1,6 @@
 import numpy as np
 from joblib import Parallel, delayed
-from src.main.utils import load_hparams, create_model
+from src.main.utilities.utils import load_hparams, create_model
 import itertools
 from .kfold_cross_validation import Kfold_CV
 
@@ -123,7 +123,7 @@ class RandomGridSearch(GridSearch):
         """
         super().__init__(params)
 
-    def get_parameters_combination(self, combinations=10):
+    def get_parameters_combination(self, combinations=1):
         """
         Function that returns the random parameters combination
 
@@ -136,7 +136,7 @@ class RandomGridSearch(GridSearch):
             all_params_combination[i] for i in np.random.choice(total_combinations, combinations)
         ]
 
-    def run_search(self, x, y, verbose=False, combinations=100):
+    def run_search(self, x, y, verbose=False, combinations=1):
         parameters_combination = self.get_parameters_combination(combinations=combinations)
         return super().search(x, y, parameters_combination, verbose)
 

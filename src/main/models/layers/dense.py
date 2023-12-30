@@ -97,7 +97,7 @@ class Dense(Layer):
         print("Bias initializer: ", repr(self.bias_initializer))
         print("Activation: ", repr(self.activation))
         print("Parameters: ", self.weights.shape[0] * self.weights.shape[1] + self.bias.shape[0])
-        
+
     def reset(self):
         """
         Reset the layer
@@ -110,6 +110,18 @@ class Dense(Layer):
         self.dW = np.zeros((self.input_size, self.output_size))
         self.db = np.zeros(self.output_size)
 
+    def to_dict(self):
+        """
+        Returns a dictionary representing the layer
+        """
+        return {
+            "input_size": self.input_size,
+            "output_size": self.output_size,
+            "weights_initializer": repr(self.weights_initializer),
+            "bias_initializer": repr(self.bias_initializer),
+            "activation": repr(self.activation)
+        }
+
     # getters and setters
     def get_weights(self):
         return self.weights
@@ -119,12 +131,12 @@ class Dense(Layer):
 
     def get_input(self):
         return self.input
-    
+
     def get_input_size(self):
         return self.input_size
-    
+
     def get_output_size(self):
-        return self.output_size 
+        return self.output_size
 
     def get_delta(self):
         return self.delta
@@ -146,7 +158,6 @@ class Dense(Layer):
 
     def set_bias(self, new_bias):
         self.bias = new_bias
-        
+
     def get_weights_initializer(self):
         return self.weights_initializer
-

@@ -48,7 +48,7 @@ class MSE(Loss, Metric):
         return np.subtract(y_pred, y_true)
 
     def __repr__(self):
-        return "mean_squared_error"
+        return "Mean Squared Error"
 
 
 class MEE(Loss, Metric):
@@ -66,7 +66,7 @@ class MEE(Loss, Metric):
         return self.forward(y_pred, y_true)
 
     def __repr__(self):
-        return "mean_euclidean_error"
+        return "Mean Euclidean Error"
 
 
 class CrossEntropy(Loss):
@@ -81,7 +81,7 @@ class CrossEntropy(Loss):
         return y_pred - y_true / y_pred.shape[0]
 
     def __repr__(self):
-        return "cross_entropy"
+        return "Cross Entropy"
 
 
 class BinaryCrossEntropy(Loss):
@@ -96,7 +96,7 @@ class BinaryCrossEntropy(Loss):
         return y_pred - y_true / y_pred.shape[0]
 
     def __repr__(self):
-        return "binary_cross_entropy"
+        return "Binary Cross Entropy"
 
 
 loss_dict = {

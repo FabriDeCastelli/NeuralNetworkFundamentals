@@ -1,6 +1,6 @@
 import numpy as np
 
-from src.main.utils import mean_std_scores, shuffle_data
+from src.main.utilities.utils import mean_std_scores, shuffle_data
 
 
 def Kfold_CV(X, y, model, k=5, epochs=500, batch_size=20, verbose=False):

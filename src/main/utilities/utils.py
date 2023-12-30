@@ -73,15 +73,10 @@ def create_model(
         model.add(Dense(units[i], units[i + 1], weight_initializer, bias_initializer, activation))
 
     sgd = SGD(learning_rate, momentum)
-    loss = loss_dict.get(loss)
 
-    metrics_object = []
-    for metric in metrics:
-        metrics_object.append(metrics_dict.get(metric))
-        
     regularizer = regularizer_dict.get(regularizer)
 
-    model.compile(sgd, loss, metrics_object, callback, regularizer)
+    model.compile(sgd, loss, metrics, callback, regularizer)
     return model
 
 
@@ -150,15 +145,16 @@ def log_experiment(exp_dir, model, train_mean, train_std, val_mean, val_std, tes
     :param val_std: the standard deviation of the scores on the validation set
     :param test_mean: the mean of the scores on the test set
     :param test_std: the standard deviation of the scores on the test set
-    :param history: the history of the training
     """
     metrics = compute_metrics(model, train_mean, train_std, val_mean, val_std, test_mean, test_std)
     metrics.to_csv(exp_dir / "metrics.csv", index=False, decimal=',')
     if histories is not None:
-        for i,history in enumerate(histories):
+        for i, history in enumerate(histories):
             fold_dir = exp_dir / f"fold_{i+1}"
             fold_dir.mkdir(exist_ok=True, parents=True)
             plot_history(history, fold_dir)
+
+    model.save(exp_dir / "model.json")
             
 
 def setup_experiment(name: str) -> Path:
