@@ -1,5 +1,5 @@
 {
-    "optimizer": "Stochastic Gradient Descent\nLearning rate: 0.00045\nMomentum: 0.73",
+    "optimizer": "Stochastic Gradient Descent\nLearning rate: 0.0005\nMomentum: 0.75",
     "loss": "Mean Squared Error",
     "metrics": [
         "Root Mean Squared Error",
@@ -36,5 +36,7 @@
             "bias_initializer": "Zeros",
             "activation": "Identity"
         }
-    ]
+    ],
+    "batch_size": 12,
+    "epochs": 12000
 }

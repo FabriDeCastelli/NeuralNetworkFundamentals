@@ -63,11 +63,11 @@ class GridSearch:
             batch_size = parameters['batch_size']
             epochs = parameters['epochs']
             return Kfold_CV(x, y, model, 5, epochs, batch_size, verbose), (epochs, batch_size)
-                
-        results = Parallel(n_jobs=7)(
+
+        results = Parallel(n_jobs=-1)(
             delayed(run)(parameters, verbose) for parameters in parameters_combination
         )
-                
+
         best_model = None
         best_params = None
         best_scores = None
@@ -121,7 +121,7 @@ class RandomGridSearch(GridSearch):
         """
         super().__init__(params)
 
-    def get_parameters_combination(self, combinations=1):
+    def get_parameters_combination(self, combinations=10):
         """
         Function that returns the random parameters combination
 
@@ -134,7 +134,7 @@ class RandomGridSearch(GridSearch):
             all_params_combination[i] for i in np.random.choice(total_combinations, combinations)
         ]
 
-    def run_search(self, x, y, verbose=False, combinations=500):
+    def run_search(self, x, y, verbose=False, combinations=20):
         parameters_combination = self.get_parameters_combination(combinations=combinations)
         return super().search(x, y, parameters_combination, verbose)
 
