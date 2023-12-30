@@ -155,8 +155,10 @@ def log_experiment(exp_dir, model, train_mean, train_std, val_mean, val_std, tes
     metrics = compute_metrics(model, train_mean, train_std, val_mean, val_std, test_mean, test_std)
     metrics.to_csv(exp_dir / "metrics.csv", index=False, decimal=',')
     if history is not None:
-        plot_history(history)
-        plt.savefig(exp_dir / "accuracy.pdf")
+        plot_history(history, exp_dir)
+        
+        
+    
 
 
 def setup_experiment(name: str) -> Path:
@@ -172,7 +174,7 @@ def setup_experiment(name: str) -> Path:
     return exp_dir
 
 
-def plot_history(history):
+def plot_history(history, exp_dir = None):
     """
     plot the history of the training and the test set
     
@@ -193,5 +195,6 @@ def plot_history(history):
         plt.xlabel('Epochs')
         plt.ylabel(f'{metric.capitalize()} Value')
         plt.legend()
+        if exp_dir is not None:
+            plt.savefig(exp_dir / f'{metric}.pdf')
         plt.show()
- 
