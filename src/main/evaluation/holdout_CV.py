@@ -30,11 +30,8 @@ def holdout_CV(X: np.ndarray,
 
     """train_mean, train_std, val_mean, val_std,"""
     ((train_mean, train_std), (val_mean, val_std)), model, params, histories = grid_search.run_search(x_train, y_train, verbose)
-    _, batch_size = params
+    _, _ = params
     
-    for i, history in enumerate(histories):
-        print("---History of fold: ", i+1)
-        plot_history(history)
     
     """print("------- BEFORE REFIT -------")
 
@@ -49,7 +46,7 @@ def holdout_CV(X: np.ndarray,
     test_score = model.evaluate(x_test, y_test)
 
     for key in test_score.keys():
-        test_std[key] = [0]
+        test_std[key] = 0.0
 
 
-    return train_mean, train_std, val_mean, val_std, test_score, test_std, model
+    return train_mean, train_std, val_mean, val_std, test_score, test_std, model, histories

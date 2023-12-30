@@ -138,7 +138,7 @@ def compute_metrics(model, train_mean, train_std, val_mean, val_std, test_mean, 
     return df
 
 
-def log_experiment(exp_dir, model, train_mean, train_std, val_mean, val_std, test_mean, test_std, history=None):
+def log_experiment(exp_dir, model, train_mean, train_std, val_mean, val_std, test_mean, test_std, histories=None):
     """
     Logs the results of an experiments on a csv file inside exp_dir
 
@@ -154,12 +154,12 @@ def log_experiment(exp_dir, model, train_mean, train_std, val_mean, val_std, tes
     """
     metrics = compute_metrics(model, train_mean, train_std, val_mean, val_std, test_mean, test_std)
     metrics.to_csv(exp_dir / "metrics.csv", index=False, decimal=',')
-    if history is not None:
-        plot_history(history, exp_dir)
-        
-        
-    
-
+    if histories is not None:
+        for i,history in enumerate(histories):
+            fold_dir = exp_dir / f"fold_{i+1}"
+            fold_dir.mkdir(exist_ok=True, parents=True)
+            plot_history(history, fold_dir)
+            
 
 def setup_experiment(name: str) -> Path:
     """

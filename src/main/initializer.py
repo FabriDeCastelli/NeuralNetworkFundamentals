@@ -44,15 +44,6 @@ class Range(Initializer):
         return np.random.uniform(min_val, max_val, shape)
 
 
-class FanIn(Initializer):
-    """
-    Fan-in initializer.
-    """
-
-    def __call__(self, shape):
-        limit = np.sqrt(6 / (shape[0] + shape[1]))
-        return np.random.uniform(-limit, limit, shape)
-
 
 class Zeros(Initializer):
     """
@@ -76,7 +67,6 @@ class GlorotUniform(Initializer):
 initializer_dict = {
     "random_normal": RandomNormal(),
     "range": Range(),
-    "fan_in": FanIn(),
     "zeros": Zeros(),
     "glorot_uniform": GlorotUniform()
 }
