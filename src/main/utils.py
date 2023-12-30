@@ -156,8 +156,12 @@ def log_experiment(exp_dir, model, train_mean, train_std, val_mean, val_std, tes
     metrics.to_csv(exp_dir / "metrics.csv", index=False, decimal=',')
     if histories is not None:
         for i,history in enumerate(histories):
-            fold_dir = exp_dir / f"fold_{i+1}"
-            fold_dir.mkdir(exist_ok=True, parents=True)
+            if(len(histories) == 1):
+                fold_dir = exp_dir / f"monk_plot"
+                fold_dir.mkdir(exist_ok=True, parents=True)
+            else:
+                fold_dir = exp_dir / f"fold_{i+1}"
+                fold_dir.mkdir(exist_ok=True, parents=True)
             plot_history(history, fold_dir)
             
 

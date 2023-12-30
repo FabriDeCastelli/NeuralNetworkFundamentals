@@ -63,7 +63,7 @@ class GridSearch:
             model = create_model(**parameters)
             batch_size = parameters['batch_size']
             epochs = parameters['epochs']
-            return Kfold_CV(x, y, model, 7, epochs, batch_size, verbose), (epochs, batch_size)
+            return Kfold_CV(x, y, model, 5, epochs, batch_size, verbose), (epochs, batch_size)
 
         results = Parallel(n_jobs=7)(
             delayed(run)(parameters, verbose) for parameters in parameters_combination

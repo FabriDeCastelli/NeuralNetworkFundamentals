@@ -2,7 +2,6 @@ import numpy as np
 
 from .grid_search import GridSearch
 from src.main.utils import shuffle_data
-from src.main.utils import plot_history
 from sklearn.model_selection import train_test_split
 
 
