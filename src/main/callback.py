@@ -108,11 +108,10 @@ class EarlyStopping(Callback):
             self.best_model = model
             self.best_iter_model = self.counter
 
-    def update_val_history(self, model, val_score: dict):
+    def update_val_history(self, val_score: dict):
         """
         update the validation history with the new validation score and store the best model
 
-        :param model: the model to check if it is the best model
         :param val_score: the new validation score
         """
         self.val_history.append(val_score)
@@ -129,6 +128,16 @@ class EarlyStopping(Callback):
 
     def __repr__(self):
         return "Early Stopping"
+
+    def to_dict(self):
+        return {
+            "Patience": self.patience,
+            "Start From Epoch": self.star_from_epoch,
+            "Delta": self.delta,
+            "Monitor": self.monitor,
+            "Restore Best Weights": self.restore_best_weights,
+            "Verbose": self.verbose
+        }
 
 
 callback_dict = {

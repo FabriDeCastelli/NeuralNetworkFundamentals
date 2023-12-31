@@ -15,11 +15,13 @@ x_train, x_test, y_train, y_test = train_test_split(x_train, y_train, test_size=
 
 hyperparameters = load_hparams("cup")
 grid_search = RandomGridSearch(hyperparameters)
-train_mean, train_std, val_mean, val_std, test_mean, test_std, model, histories = (
+train_mean, train_std, val_mean, val_std, test_mean, test_std, model, params, histories = (
     holdout_CV(x_train, y_train, grid_search, verbose=True)
 )
 
-log_experiment(setup_experiment("cup"), model, train_mean, train_std, val_mean, val_std, test_mean, test_std, histories)
+print(params)
+
+log_experiment(setup_experiment("cup1"), model, train_mean, train_std, val_mean, val_std, test_mean, test_std, histories)
 
 print("------ Train scores: ------ ")
 print_score(train_mean, train_std)

@@ -9,7 +9,7 @@ import seaborn as sns
 
 from config.config import HPARAMS_ROOT, PROJECT_FOLDER_PATH
 from src.main.activation import activation_dict
-from src.main.callback import Callback
+from src.main.callback import Callback, EarlyStopping
 from src.main.initializer import Initializer
 from src.main.loss import loss_dict
 from src.main.metric import metrics_dict
@@ -54,7 +54,11 @@ def create_model(
         activations: list[str],
         loss: str,
         metrics: list[str],
-        callback: str | Callback = None,
+        restore_best_weights,
+        monitor,
+        delta,
+        start_from_epoch,
+        patience,
         regularizer: str | Regularizer = None,
         weight_initializer: str | Initializer = 'glorot_uniform',
         bias_initializer: str | Initializer = 'zeros',
@@ -69,14 +73,17 @@ def create_model(
 
     model = Model()
     for i in range(len(units) - 1):
-        activation = activation_dict.get(activations[i])
-        model.add(Dense(units[i], units[i + 1], weight_initializer, bias_initializer, activation))
+        model.add(Dense(units[i], units[i + 1], weight_initializer, bias_initializer, activations[i]))
 
     sgd = SGD(learning_rate, momentum)
-
     regularizer = regularizer_dict.get(regularizer)
 
+    if regularizer:
+        regularizer.set_lambda(lambd)
+
+    callback = EarlyStopping(patience, start_from_epoch, delta, monitor, restore_best_weights)
     model.compile(sgd, loss, metrics, callback, regularizer)
+
     return model
 
 
@@ -150,7 +157,7 @@ def log_experiment(exp_dir, model, train_mean, train_std, val_mean, val_std, tes
     metrics.to_csv(exp_dir / "metrics.csv", index=False, decimal=',')
     if histories is not None:
         for i,history in enumerate(histories):
-            if(len(histories) == 1):
+            if len(histories) == 1:
                 fold_dir = exp_dir / f"monk_plot"
                 fold_dir.mkdir(exist_ok=True, parents=True)
             else:
@@ -187,7 +194,7 @@ def plot_history(history, exp_dir = None):
         epochs = np.arange(1, len(history[metric]['training']) + 1)
         plt.figure(figsize=(8, 5))
         plt.plot(epochs, history[metric]['training'], label='Training')
-        if("test" in history[metric].keys()):
+        if "test" in history[metric].keys():
             plt.plot(epochs, history[metric]['test'], label='Test') #, color='#C80000', linestyle='--') 
         else:
             plt.plot(epochs, history[metric]['validation'], label='Validation') #, color='#C80000', linestyle='--') 

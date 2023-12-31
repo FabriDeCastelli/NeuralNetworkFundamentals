@@ -130,7 +130,7 @@ class Model:
                 self.callback.increment_counter()
                 if self.callback.get_restore_best_weights():
                     self.callback.update_best_model(self, val_score)
-                self.callback.update_val_history(self, val_score)
+                self.callback.update_val_history(val_score)
 
                 if self.callback.check_stop():
                     print("Early Stopping Triggered at iter: ", self.callback.get_counter())
@@ -264,11 +264,11 @@ class Model:
 
     def to_dict(self):
         model_dict = {
-            "optimizer": repr(self.optimizer),
+            "optimizer": self.optimizer.to_dict(),
             "loss": repr(self.loss),
             "metrics": [repr(metric) for metric in self.metrics],
-            "callback": repr(self.callback),
-            "regularizer": repr(self.regularizer),
+            "callback": self.callback.to_dict(),
+            "regularizer": self.regularizer.to_dict(),
             "layers": [layer.to_dict() for layer in self.layers]
         }
         return model_dict

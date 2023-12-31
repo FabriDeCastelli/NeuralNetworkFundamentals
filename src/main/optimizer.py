@@ -88,6 +88,12 @@ class SGD(Optimizer):
         layer.set_weights(new_weights)
         layer.set_bias(new_b)
 
+    def to_dict(self):
+        return {
+            "Learning Rate": self.learning_rate,
+            "Momentum": self.momentum
+        }
+
 
 optimizer_dict = {
     "sgd": SGD()
