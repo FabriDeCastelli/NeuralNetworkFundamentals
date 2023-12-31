@@ -140,12 +140,14 @@ def compute_metrics(model, train_mean, train_std, val_mean, val_std, test_mean, 
     return df
 
 
-def log_experiment(exp_dir, model, train_mean, train_std, val_mean, val_std, test_mean, test_std, histories=None):
+def log_experiment(exp_dir, model, batch_size, epochs, train_mean, train_std, val_mean, val_std, test_mean, test_std, histories=None):
     """
     Logs the results of an experiments on a csv file inside exp_dir
 
     :param exp_dir: the path of the experiment directory
     :param model: the model used for the experiment
+    :param batch_size: the batch size used for the experiment
+    :param epochs: the number of epochs used for the experiment
     :param train_mean: the mean of the scores on the training set
     :param train_std: the standard deviation of the scores on the training set
     :param val_mean: the mean of the scores on the validation set
@@ -156,7 +158,7 @@ def log_experiment(exp_dir, model, train_mean, train_std, val_mean, val_std, tes
     metrics = compute_metrics(model, train_mean, train_std, val_mean, val_std, test_mean, test_std)
     metrics.to_csv(exp_dir / "metrics.csv", index=False, decimal=',')
     if histories is not None:
-        for i,history in enumerate(histories):
+        for i, history in enumerate(histories):
             if len(histories) == 1:
                 fold_dir = exp_dir / f"monk_plot"
                 fold_dir.mkdir(exist_ok=True, parents=True)
@@ -165,8 +167,8 @@ def log_experiment(exp_dir, model, train_mean, train_std, val_mean, val_std, tes
                 fold_dir.mkdir(exist_ok=True, parents=True)
             plot_history(history, fold_dir)
 
-    model.save(exp_dir / "model.json")
-            
+    model.save(exp_dir / "model.json", batch_size, epochs)
+
 
 def setup_experiment(name: str) -> Path:
     """
@@ -181,10 +183,11 @@ def setup_experiment(name: str) -> Path:
     return exp_dir
 
 
-def plot_history(history, exp_dir = None):
+def plot_history(history, exp_dir=None):
     """
     plot the history of the training and the test set
     
+    :param exp_dir: the path of the experiment directory
     :param history: the history of the training and test set
     """
     sns.set_context("notebook")
@@ -204,4 +207,4 @@ def plot_history(history, exp_dir = None):
         plt.legend()
         if exp_dir is not None:
             plt.savefig(exp_dir / f'{metric}.pdf')
-        #plt.show()
+        # plt.show()

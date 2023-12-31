@@ -30,7 +30,7 @@ class RootMeanSquaredError(Metric):
         return np.sqrt(np.mean(np.sum(np.square(np.subtract(y_pred, y_true)), axis=1), axis=0))
 
     def __repr__(self):
-        return "Root Mean Squared Error"
+        return "root_mean_squared_error"
 
 
 class MEE(Metric):
@@ -42,7 +42,7 @@ class MEE(Metric):
         return np.mean(np.linalg.norm(np.subtract(y_true, y_pred), ord=2, axis=1), axis=0)
 
     def __repr__(self):
-        return "Mean Euclidean Error"
+        return "mean_euclidean_error"
 
 
 class Accuracy(Metric):
@@ -54,7 +54,7 @@ class Accuracy(Metric):
         return np.mean(np.argmax(y_pred, axis=1) == np.argmax(y_true, axis=1))
 
     def __repr__(self):
-        return "Accuracy"
+        return "accuracy"
 
 
 class BinaryAccuracy(Metric):
@@ -67,7 +67,7 @@ class BinaryAccuracy(Metric):
         return np.mean(y_pred == y_true)
 
     def __repr__(self):
-        return "Binary Accuracy"
+        return "binary_accuracy"
 
 
 metrics_dict = {

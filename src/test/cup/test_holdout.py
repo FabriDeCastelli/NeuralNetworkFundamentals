@@ -19,9 +19,11 @@ train_mean, train_std, val_mean, val_std, test_mean, test_std, model, params, hi
     holdout_CV(x_train, y_train, grid_search, verbose=True)
 )
 
-print(params)
-
-log_experiment(setup_experiment("cup1"), model, train_mean, train_std, val_mean, val_std, test_mean, test_std, histories)
+log_experiment(
+    setup_experiment("cup1"),
+    model, params[0], params[1],
+    train_mean, train_std, val_mean, val_std, test_mean, test_std, histories
+)
 
 print("------ Train scores: ------ ")
 print_score(train_mean, train_std)
@@ -29,4 +31,3 @@ print("------ Validation scores: ------ ")
 print_score(val_mean, val_std)
 print("------ Test scores: ------ ")
 print_score(test_mean, test_std)
-

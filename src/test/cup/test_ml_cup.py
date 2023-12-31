@@ -22,7 +22,6 @@ optimizer = SGD(learning_rate=0.0005, momentum=0.75)
 
 model.compile(optimizer=optimizer, loss='mean_squared_error', metrics=['root_mean_squared_error', MEE()])
 
-model.save("model.json")
 model.summary()
 
 model, history = model.fit(x_train, y_train, x_test, y_test, epochs=12000, batch_size=12, verbose=True)

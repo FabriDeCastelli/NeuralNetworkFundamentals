@@ -48,7 +48,7 @@ class MSE(Loss, Metric):
         return np.subtract(y_pred, y_true)
 
     def __repr__(self):
-        return "Mean Squared Error"
+        return "mean_squared_error"
 
 
 class MEE(Loss, Metric):
@@ -66,7 +66,7 @@ class MEE(Loss, Metric):
         return self.forward(y_pred, y_true)
 
     def __repr__(self):
-        return "Mean Euclidean Error"
+        return "mean_euclidean_error"
 
 
 class CrossEntropy(Loss):
@@ -81,7 +81,7 @@ class CrossEntropy(Loss):
         return y_pred - y_true / y_pred.shape[0]
 
     def __repr__(self):
-        return "Cross Entropy"
+        return "cross_ntropy"
 
 
 class BinaryCrossEntropy(Loss):
@@ -96,7 +96,7 @@ class BinaryCrossEntropy(Loss):
         return y_pred - y_true / y_pred.shape[0]
 
     def __repr__(self):
-        return "Binary Cross Entropy"
+        return "binary_cross_entropy"
 
 
 loss_dict = {
@@ -108,5 +108,5 @@ loss_dict = {
 
 # hash map to know which metric to maximize and which to minimize (always minimize the loss)
 loss_map = {
-    "minimize": ["loss"]
+    "minimize": ["mean_squared_error", "mean_euclidean_error", "cross_entropy", "binary_cross_entropy"]
 }

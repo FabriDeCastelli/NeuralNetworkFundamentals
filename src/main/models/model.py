@@ -262,18 +262,20 @@ class Model:
             layer.summary()
         print(" ")
 
-    def to_dict(self):
+    def to_dict(self, batch_size: int, epochs: int):
         model_dict = {
-            "optimizer": self.optimizer.to_dict(),
+            "optimizer": self.optimizer.to_dict() if self.optimizer else repr(None),
+            "batch_size": batch_size,
+            "epochs": epochs,
             "loss": repr(self.loss),
             "metrics": [repr(metric) for metric in self.metrics],
-            "callback": self.callback.to_dict(),
-            "regularizer": self.regularizer.to_dict(),
+            "callback": self.callback.to_dict() if self.callback else repr(None),
+            "regularizer": self.regularizer.to_dict() if self.regularizer else repr(None),
             "layers": [layer.to_dict() for layer in self.layers]
         }
         return model_dict
 
-    def save(self, path: str):
-        model_dict = self.to_dict()
+    def save(self, path: str, batch_size: int, epochs: int):
+        model_dict = self.to_dict(batch_size, epochs)
         with open(path, "w+") as file:
             json.dump(model_dict, file, indent=4)
