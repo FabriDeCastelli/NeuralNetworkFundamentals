@@ -6,19 +6,19 @@ from src.main.optimizer import SGD
 from src.main.regularizer import L2, L1
 from src.main.utilities.utils import log_experiment, setup_experiment
 
-x_train, y_train, x_test, y_test = get_monk(3)
-x_train, x_val, y_train, y_val = train_test_split(x_train, y_train, test_size=0.1, random_state=42)
+x_train, y_train, x_test, y_test = get_monk(2)
+x_train, x_val, y_train, y_val = train_test_split(x_train, y_train, test_size=0.2, random_state=42)
 
 model = Model()
 model.add(Dense(17, 4, activation="relu", weight_initializer="glorot_uniform", bias_initializer="zeros"))
 model.add(Dense(4, 1, activation="sigmoid", weight_initializer="glorot_uniform", bias_initializer="zeros"))
 
-optimizer = SGD(learning_rate=0.3, momentum=0.6)
-l1 = L1(0.005)
+optimizer = SGD(learning_rate=0.2, momentum=0.5)
+l2 = L2(0)
 
 model.compile(optimizer=optimizer, loss="mean_squared_error", metrics=["binary_accuracy"])
 
-_, history = model.fit(x_train, y_train, x_val, y_val, epochs=450, batch_size=x_train.shape[0], verbose=False)
+_, history = model.fit(x_train, y_train, x_val, y_val, epochs=450, batch_size=12, verbose=False)
 
 train_score = model.evaluate(x_train, y_train)
 val_score = model.evaluate(x_val, y_val)
@@ -32,7 +32,7 @@ for key in test_score.keys():
     val_std[key] = 0.0
     test_std[key] = 0.0
 
-log_experiment(setup_experiment("monk3.1"),model, train_score, train_std, val_score, val_std, test_score, test_std, [history])
+log_experiment(setup_experiment("monk2.1"),model, train_score, train_std, val_score, val_std, test_score, test_std, [history])
 
 
 print("------ Train scores: ------ ")

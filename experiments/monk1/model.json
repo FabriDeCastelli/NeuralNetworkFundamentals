@@ -1,0 +1,25 @@
+{
+    "optimizer": "Stochastic Gradient Descent\nLearning rate: 0.4\nMomentum: 0.6",
+    "loss": "Mean Squared Error",
+    "metrics": [
+        "Binary Accuracy"
+    ],
+    "callback": "None",
+    "regularizer": "None",
+    "layers": [
+        {
+            "input_size": 17,
+            "output_size": 4,
+            "weights_initializer": "GlorotUniform",
+            "bias_initializer": "Zeros",
+            "activation": "ReLu"
+        },
+        {
+            "input_size": 4,
+            "output_size": 1,
+            "weights_initializer": "GlorotUniform",
+            "bias_initializer": "Zeros",
+            "activation": "Sigmoid"
+        }
+    ]
+}
