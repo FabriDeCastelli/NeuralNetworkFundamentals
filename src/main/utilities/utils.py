@@ -54,11 +54,11 @@ def create_model(
         activations: list[str],
         loss: str,
         metrics: list[str],
-        restore_best_weights,
-        monitor,
-        delta,
-        start_from_epoch,
-        patience,
+        restore_best_weights: bool = None,
+        monitor: str = None,
+        delta: float = None,
+        start_from_epoch: int = None,
+        patience: int = None,
         regularizer: str | Regularizer = None,
         weight_initializer: str | Initializer = 'glorot_uniform',
         bias_initializer: str | Initializer = 'zeros',
@@ -81,7 +81,10 @@ def create_model(
     if regularizer:
         regularizer.set_lambda(lambd)
 
-    callback = EarlyStopping(patience, start_from_epoch, delta, monitor, restore_best_weights)
+    if patience is not  None:
+        callback = EarlyStopping(patience, start_from_epoch, delta, monitor, restore_best_weights)
+    else:
+        callback = None
     model.compile(sgd, loss, metrics, callback, regularizer)
 
     return model

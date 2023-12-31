@@ -43,3 +43,4 @@ def Kfold_CV(X, y, model, k=5, epochs=500, batch_size=20, verbose=False):
         histories.append(history)
                 
     return (mean_std_scores(train_scores), mean_std_scores(val_scores)), model, histories
+
