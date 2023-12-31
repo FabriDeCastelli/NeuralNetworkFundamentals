@@ -50,7 +50,7 @@ class EarlyStopping(Callback):
     def get_best_model(self):
         return self.best_model
 
-    def get_restore_best_weights(self):
+    def restore_best_weights(self):
         return self.restore_best_weights
 
     def get_best_iter_model(self):
@@ -71,12 +71,8 @@ class EarlyStopping(Callback):
             :param delta: the maximum allowed difference between elements
             :return: True if all elements are different by at most delta, False otherwise
             """
-            n = len(lst)
-            for i in range(n):
-                for j in range(i + 1, n):
-                    if abs(lst[i][self.monitor] - lst[j][self.monitor]) > delta:
-                        return False
-            return True
+            minimum, maximum = min(lst), max(lst)
+            return maximum - minimum <= delta
 
         if self.counter < self.star_from_epoch:
             return False

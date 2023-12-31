@@ -120,15 +120,15 @@ class Model:
             training_scores.append(self.evaluate(x_train, y_train))
 
             val_score = {}
-            if x_val is not None:
+            if x_val:
                 val_score = self.evaluate(x_val, y_val)
                 validation_scores.append(val_score)
 
             # early stopping logic
-            if self.callback is not None and x_val is not None:
+            if self.callback and x_val:
 
                 self.callback.increment_counter()
-                if self.callback.get_restore_best_weights():
+                if self.callback.restore_best_weights():
                     self.callback.update_best_model(self, val_score)
                 self.callback.update_val_history(val_score)
 
@@ -161,7 +161,7 @@ class Model:
             "validation": validation_scores
         })
 
-        if self.callback is not None and self.callback.get_restore_best_weights():
+        if self.callback and self.callback.restore_best_weights():
             return self.callback.get_best_model(), history
 
         return self, history
