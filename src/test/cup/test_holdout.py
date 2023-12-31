@@ -14,13 +14,13 @@ x_train, y_train, _ = get_cup_dataset()
 x_train, x_test, y_train, y_test = train_test_split(x_train, y_train, test_size=0.1, random_state=42)
 
 hyperparameters = load_hparams("cup")
-grid_search = RandomGridSearch(hyperparameters)
+grid_search = RandomGridSearch(hyperparameters, 1)
 train_mean, train_std, val_mean, val_std, test_mean, test_std, model, params, histories = (
     holdout_CV(x_train, y_train, grid_search, verbose=True)
 )
 
 log_experiment(
-    setup_experiment("cup1"),
+    setup_experiment("cup_prova"),
     model, params[0], params[1],
     train_mean, train_std, val_mean, val_std, test_mean, test_std, histories
 )

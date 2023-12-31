@@ -27,9 +27,12 @@ class GridSearch:
         :return: the parameters combination
         """
         keys, values = zip(*self.__dict__.items())
+        # remove the combinations from keys and values
+        keys = keys[:-1]
+        values = values[:-1]
         return [dict(zip(keys, v)) for v in itertools.product(*values)]
 
-    def run_search(self, x, y, kfold=True,verbose=False, combinations=-1):
+    def run_search(self, x, y, kfold=True,verbose=False):
         """
         Performs a grid search over the parameters stored in the instance.
         At each parameter configuration a K Fold CV is performed and the
@@ -38,7 +41,6 @@ class GridSearch:
         :param x: the input data
         :param y: the target data
         :param verbose: whether to print the progress of the training
-        :param combinations: not used
         :return: the best model found
         """
         parameters_combination = self.get_parameters_combination()
@@ -65,21 +67,21 @@ class GridSearch:
             epochs = parameters['epochs']
             if kfold:
                 return Kfold_CV(x, y, model, 5, epochs, batch_size, verbose), (epochs, batch_size)
-            else: 
+            else:
                 x_train, x_val, y_train, y_val = train_test_split(x, y, test_size=0.1, random_state=42)
                 model, history = model.fit(x_train, y_train, x_val, y_val, epochs, batch_size, verbose)
-                
+
                 train_score = model.evaluate(x_train, y_train)
                 val_score = model.evaluate(x_val, y_val)
                 train_std = {}
                 val_std = {}
-                
+
                 for key in train_score.keys():
                     train_std[key] = 0.0
                     val_std[key] = 0.0
-                
+
                 return (((train_score, train_std), (val_score, val_std)), model, [history]), (epochs, batch_size)
-            
+
         results = Parallel(n_jobs=-1)(
             delayed(run)(parameters, verbose, kfold) for parameters in parameters_combination
         )
@@ -100,8 +102,8 @@ class GridSearch:
                 best_scores = result
                 best_model = model
                 best_params = parameters
-                best_history = histories            
-        
+                best_history = histories
+
         return best_scores, best_model, best_params, best_history
 
 
@@ -110,29 +112,29 @@ class RandomGridSearch(GridSearch):
     Class that implements a random grid search
     """
 
-    def __init__(self, params):
+    def __init__(self, params, combinations=10):
         """
         Constructor of the class
 
         :param params: the dictionary of parameters to be used in the grid search
         """
         super().__init__(params)
+        self.combinations = combinations
 
-    def get_parameters_combination(self, combinations=10):
+    def get_parameters_combination(self):
         """
         Function that returns the random parameters combination
 
-        :param combinations: the number of combinations to be returned
         :return: the parameters combination
         """
         all_params_combination = super().get_parameters_combination()
         total_combinations = len(all_params_combination)
         return [
-            all_params_combination[i] for i in np.random.choice(total_combinations, combinations)
+            all_params_combination[i] for i in np.random.choice(total_combinations, self.combinations)
         ]
 
-    def run_search(self, x, y,verbose=False, combinations=100, kfold=True,):
-        parameters_combination = self.get_parameters_combination(combinations=combinations)
+    def run_search(self, x, y, verbose=False, kfold=True,):
+        parameters_combination = self.get_parameters_combination()
         return super().search(x, y, parameters_combination, verbose, kfold)
 
 
