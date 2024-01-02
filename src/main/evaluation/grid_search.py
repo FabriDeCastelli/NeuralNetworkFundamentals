@@ -32,7 +32,7 @@ class GridSearch:
         values = values[:-1]
         return [dict(zip(keys, v)) for v in itertools.product(*values)]
 
-    def run_search(self, x, y, kfold=True,verbose=False):
+    def run_search(self, x, y, kfold=True, verbose=False):
         """
         Performs a grid search over the parameters stored in the instance.
         At each parameter configuration a K Fold CV is performed and the
@@ -40,14 +40,15 @@ class GridSearch:
 
         :param x: the input data
         :param y: the target data
+        :param kfold: whether to use kfold or holdout
         :param verbose: whether to print the progress of the training
         :return: the best model found
         """
         parameters_combination = self.get_parameters_combination()
-        return GridSearch.search(x, y, parameters_combination, verbose, kfold=True)
+        return GridSearch.search(x, y, parameters_combination, verbose, kfold=kfold)
 
     @staticmethod
-    def search(x, y, parameters_combination, verbose=False, kfold=True,):
+    def search(x, y, parameters_combination, verbose=False, kfold=True):
         """
         Performs a grid search over the parameters stored in the instance.
         At each parameter configuration a K Fold CV is performed and the
@@ -57,6 +58,7 @@ class GridSearch:
         :param y: the target data
         :param parameters_combination: the parameters combination to be used in the grid search
         :param verbose: whether to print the progress of the training
+        :param kfold: whether to use kfold or holdout
         :return: the best score, model and params for fitting found
         """
         assert parameters_combination
@@ -66,7 +68,7 @@ class GridSearch:
             batch_size = parameters['batch_size']
             epochs = parameters['epochs']
             if kfold:
-                return Kfold_CV(x, y, model, 5, epochs, batch_size, verbose), (epochs, batch_size)
+                return Kfold_CV(x, y, model, 7, epochs, batch_size, verbose), model, (epochs, batch_size)
             else:
                 x_train, x_val, y_train, y_val = train_test_split(x, y, test_size=0.1, random_state=42)
                 model, history = model.fit(x_train, y_train, x_val, y_val, epochs, batch_size, verbose)
@@ -80,7 +82,7 @@ class GridSearch:
                     train_std[key] = 0.0
                     val_std[key] = 0.0
 
-                return (((train_score, train_std), (val_score, val_std)), model, [history]), (epochs, batch_size)
+                return (((train_score, train_std), (val_score, val_std)), [history]), model, (epochs, batch_size)
 
         results = Parallel(n_jobs=-1)(
             delayed(run)(parameters, verbose, kfold) for parameters in parameters_combination
@@ -92,9 +94,8 @@ class GridSearch:
         best_history = None
         best_val_loss = np.inf
 
-        for i, (res, parameters) in enumerate(results):
-            result, model, histories = res
-            print("History for iteration", i+1, ":")
+        for i, (res, model, parameters) in enumerate(results):
+            result, histories = res
             plot_history(histories[0])
             mean_val = result[1][0][repr(model.get_loss())]
             if mean_val < best_val_loss:
@@ -133,12 +134,6 @@ class RandomGridSearch(GridSearch):
             all_params_combination[i] for i in np.random.choice(total_combinations, self.combinations)
         ]
 
-    def run_search(self, x, y, verbose=False, kfold=True,):
+    def run_search(self, x, y, verbose=False, kfold=True):
         parameters_combination = self.get_parameters_combination()
-        return super().search(x, y, parameters_combination, verbose, kfold)
-
-
-if __name__ == '__main__':
-    params = load_hparams("monk1")
-    grid_search = RandomGridSearch(params)
-    grid_search.run_search(None, None, None)
+        return GridSearch.search(x, y, parameters_combination, verbose, kfold)

@@ -26,7 +26,7 @@ class EarlyStopping(Callback):
         :param start_from_epoch: the number of epochs to wait before stopping the training
         :param delta: the minimum change in the monitored metric to qualify as an improvement
         :param monitor: the metric to monitor    
-        :restore_best_weights: whether to restore model weights from the epoch with the best value of the monitored metric    
+        :param restore_best_weights: whether to restore model weights from the epoch with the best value of the monitored metric
         """
         super().__init__()
         self.patience = patience
@@ -50,7 +50,7 @@ class EarlyStopping(Callback):
     def get_best_model(self):
         return self.best_model
 
-    def restore_best_weights(self):
+    def get_restore_best_weights(self):
         return self.restore_best_weights
 
     def get_best_iter_model(self):
@@ -71,6 +71,10 @@ class EarlyStopping(Callback):
             :param delta: the maximum allowed difference between elements
             :return: True if all elements are different by at most delta, False otherwise
             """
+            if len(lst) in [0, 1]:
+                return False
+
+            lst = [x[self.monitor] for x in lst]
             minimum, maximum = min(lst), max(lst)
             return maximum - minimum <= delta
 
@@ -131,8 +135,7 @@ class EarlyStopping(Callback):
             "Start From Epoch": self.star_from_epoch,
             "Delta": self.delta,
             "Monitor": self.monitor,
-            "Restore Best Weights": self.restore_best_weights,
-            "Verbose": self.verbose
+            "Restore Best Weights": self.restore_best_weights
         }
 
 

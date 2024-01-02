@@ -120,21 +120,21 @@ class Model:
             training_scores.append(self.evaluate(x_train, y_train))
 
             val_score = {}
-            if x_val:
+            if x_val is not None:
                 val_score = self.evaluate(x_val, y_val)
                 validation_scores.append(val_score)
 
             # early stopping logic
-            if self.callback and x_val:
+            if self.callback is not None and x_val is not None:
 
                 self.callback.increment_counter()
-                if self.callback.restore_best_weights():
+                if self.callback.get_restore_best_weights():
                     self.callback.update_best_model(self, val_score)
                 self.callback.update_val_history(val_score)
 
                 if self.callback.check_stop():
                     print("Early Stopping Triggered at iter: ", self.callback.get_counter())
-                    self.callback.reset()
+                    # self.callback.reset()
                     break
 
             if verbose and epoch % 50 == 0:
@@ -161,7 +161,7 @@ class Model:
             "validation": validation_scores
         })
 
-        if self.callback and self.callback.restore_best_weights():
+        if self.callback and self.callback.get_restore_best_weights():
             return self.callback.get_best_model(), history
 
         return self, history
@@ -239,10 +239,11 @@ class Model:
 
         return model_score
 
-    def initialize_weights(self):
+    def reset(self):
         """
-        Initializes the weights of the model.
+        Reset the model to the initial state.
         """
+        self.callback.reset()
         for layer in self.layers:
             layer.reset()
 
@@ -262,7 +263,14 @@ class Model:
             layer.summary()
         print(" ")
 
-    def to_dict(self, batch_size: int, epochs: int):
+    def to_dict(self, epochs: int, batch_size: int):
+        """
+        Serializes the model to a dictionary.
+
+        :param epochs: the epochs used for training
+        :param batch_size: the batch size used for training
+        :return: a dictionary representing the model
+        """
         model_dict = {
             "optimizer": self.optimizer.to_dict() if self.optimizer else repr(None),
             "batch_size": batch_size,
@@ -275,7 +283,14 @@ class Model:
         }
         return model_dict
 
-    def save(self, path: str, batch_size: int, epochs: int):
-        model_dict = self.to_dict(batch_size, epochs)
+    def save(self, path: str, epochs: int, batch_size: int):
+        """
+        Saves the model to a json file.
+
+        :param path: the path of the file where to save the model
+        :param epochs: the number of epochs used for training
+        :param batch_size: the batch size used for training
+        """
+        model_dict = self.to_dict(epochs=epochs, batch_size=batch_size)
         with open(path, "w+") as file:
             json.dump(model_dict, file, indent=4)

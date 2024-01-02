@@ -167,7 +167,7 @@ def compute_metrics(model, train_mean, train_std, val_mean, val_std, test_mean, 
     return df
 
 
-def log_experiment(exp_dir, model, batch_size, epochs, train_mean, train_std, val_mean, val_std, test_mean, test_std,
+def log_experiment(exp_dir, model, epochs, batch_size, train_mean, train_std, val_mean, val_std, test_mean, test_std,
                    histories=None):
     """
     Logs the results of an experiments on a csv file inside exp_dir
@@ -196,7 +196,7 @@ def log_experiment(exp_dir, model, batch_size, epochs, train_mean, train_std, va
                 fold_dir.mkdir(exist_ok=True, parents=True)
             plot_history(history, fold_dir)
 
-    model.save(exp_dir / "model.json", batch_size, epochs)
+    model.save(exp_dir / "model.json", epochs, batch_size)
 
 
 def setup_experiment(name: str) -> Path:
@@ -236,4 +236,4 @@ def plot_history(history, exp_dir=None):
         plt.legend()
         if exp_dir is not None:
             plt.savefig(exp_dir / f'{metric}.pdf')
-        # plt.show()
+        plt.show()
