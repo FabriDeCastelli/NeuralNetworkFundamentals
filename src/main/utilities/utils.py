@@ -1,3 +1,4 @@
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -7,12 +8,9 @@ import pandas as pd
 from matplotlib import pyplot as plt
 import seaborn as sns
 
-from config.config import HPARAMS_ROOT, PROJECT_FOLDER_PATH
-from src.main.activation import activation_dict
-from src.main.callback import Callback, EarlyStopping
+from config.config import HPARAMS_ROOT, PROJECT_FOLDER_PATH, RESULTS_PATH
+from src.main.callback import EarlyStopping
 from src.main.initializer import Initializer
-from src.main.loss import loss_dict
-from src.main.metric import metrics_dict
 from src.main.models.layers.dense import Dense
 from src.main.models.model import Model
 from src.main.optimizer import SGD
@@ -81,7 +79,7 @@ def create_model(
     if regularizer:
         regularizer.set_lambda(lambd)
 
-    if patience is not  None:
+    if patience is not None:
         callback = EarlyStopping(patience, start_from_epoch, delta, monitor, restore_best_weights)
     else:
         callback = None
@@ -118,6 +116,32 @@ def mean_std_scores(scores):
     return mean_score, std_score
 
 
+def predictions_to_csv(predictions, filename="Martiri_della_mensa_ML-CUP-23-TS.csv"):
+    """
+    Save the predictions of a model in a csv file in the results folder
+
+    :param predictions: a numpy array containing the predictions
+    :param filename: the path of the file where to save the predictions
+    :return:
+    """
+    assert predictions is not None
+    n_targets = predictions.shape[1]
+    n_data = predictions.shape[0]
+    today = datetime.today()
+    fmt = '%d,' + '%.5f,' * n_targets
+    fmt = fmt[:-1]
+    filename = RESULTS_PATH + "/" + filename
+
+    with open(filename, "w+", newline='') as file:
+        file.write("#Francesco Aliprandi, Fabrizio De Castelli\n")
+        file.write("#Martiri della Mensa\n")
+        file.write("#ML-CUP23\n")
+        file.write("#" + today.strftime("%d/%m/%Y") + "\n")
+        ids = np.arange(1, n_data + 1).reshape(-1, 1).astype(int)
+        predictions = np.concatenate((ids, predictions), axis=1)
+        np.savetxt(file, predictions, delimiter=',', fmt=fmt)
+
+
 def compute_metrics(model, train_mean, train_std, val_mean, val_std, test_mean, test_std):
     """
     take the model and the scores on the set and create a pandas dataframe with the results
@@ -143,7 +167,8 @@ def compute_metrics(model, train_mean, train_std, val_mean, val_std, test_mean, 
     return df
 
 
-def log_experiment(exp_dir, model, batch_size, epochs, train_mean, train_std, val_mean, val_std, test_mean, test_std, histories=None):
+def log_experiment(exp_dir, model, batch_size, epochs, train_mean, train_std, val_mean, val_std, test_mean, test_std,
+                   histories=None):
     """
     Logs the results of an experiments on a csv file inside exp_dir
 
@@ -157,6 +182,7 @@ def log_experiment(exp_dir, model, batch_size, epochs, train_mean, train_std, va
     :param val_std: the standard deviation of the scores on the validation set
     :param test_mean: the mean of the scores on the test set
     :param test_std: the standard deviation of the scores on the test set
+    :param histories: the histories of performances on the training and validation sets
     """
     metrics = compute_metrics(model, train_mean, train_std, val_mean, val_std, test_mean, test_std)
     metrics.to_csv(exp_dir / "metrics.csv", index=False, decimal=',')
@@ -166,7 +192,7 @@ def log_experiment(exp_dir, model, batch_size, epochs, train_mean, train_std, va
                 fold_dir = exp_dir / f"monk_plot"
                 fold_dir.mkdir(exist_ok=True, parents=True)
             else:
-                fold_dir = exp_dir / f"fold_{i+1}"
+                fold_dir = exp_dir / f"fold_{i + 1}"
                 fold_dir.mkdir(exist_ok=True, parents=True)
             plot_history(history, fold_dir)
 
@@ -201,9 +227,9 @@ def plot_history(history, exp_dir=None):
         plt.figure(figsize=(8, 5))
         plt.plot(epochs, history[metric]['training'], label='Training')
         if "test" in history[metric].keys():
-            plt.plot(epochs, history[metric]['test'], label='Test') #, color='#C80000', linestyle='--') 
+            plt.plot(epochs, history[metric]['test'], label='Test')  # , color='#C80000', linestyle='--')
         else:
-            plt.plot(epochs, history[metric]['validation'], label='Validation') #, color='#C80000', linestyle='--') 
+            plt.plot(epochs, history[metric]['validation'], label='Validation')  # , color='#C80000', linestyle='--')
         plt.title(f'{metric.capitalize()} Over Epochs')
         plt.xlabel('Epochs')
         plt.ylabel(f'{metric.capitalize()} Value')
