@@ -2,7 +2,6 @@ from sklearn.model_selection import train_test_split
 
 from src.main.callback import EarlyStopping
 from src.main.utilities.dataset_handler import get_cup_dataset
-from src.main.loss import MEE
 from src.main.models.layers.dense import Dense
 from src.main.models.model import Model
 from src.main.optimizer import SGD
@@ -33,34 +32,3 @@ print("Fitting time:", (tf.timestamp() - now).numpy())
 plot_history(history)
 errors = model.evaluate(x_test, y_test)
 print(errors)
-
-predictions = model.predict(x_test)
-predictions_to_csv(predictions)
-
-# --------- Keras ------------
-from keras.models import Sequential
-from keras.layers import Dense
-from keras.optimizers.legacy import SGD
-
-model = Sequential()
-model.add(Dense(64, input_dim=10, activation='relu'))
-model.add(Dense(32, activation='relu'))
-model.add(Dense(16, activation='relu'))
-model.add(Dense(3))
-
-
-def mean_euclidean_error(y_true, y_pred):
-    return tf.reduce_mean(tf.norm(y_true - y_pred, axis=1))
-
-
-sgd = SGD(learning_rate=0.0005, momentum=0.75)
-
-model.compile(loss="mean_squared_error", optimizer=sgd,  metrics=['RootMeanSquaredError', mean_euclidean_error])
-
-model.fit(x_train, y_train, epochs=12000, batch_size=12, verbose=0)
-
-model.summary()
-
-errors = model.evaluate(x_test, y_test)
-print(errors)
-

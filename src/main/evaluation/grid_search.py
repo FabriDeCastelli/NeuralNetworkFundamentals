@@ -93,11 +93,15 @@ class GridSearch:
         best_scores = None
         best_history = None
         best_val_loss = np.inf
+        top5 = []
 
         for i, (res, model, parameters) in enumerate(results):
+            epochs = parameters[0]
+            batch_size = parameters[1]
             result, histories = res
             plot_history(histories[0])
             mean_val = result[1][0][repr(model.get_loss())]
+            top5.append((result, model, (epochs, batch_size)))
             if mean_val < best_val_loss:
                 best_val_loss = mean_val
                 best_scores = result
@@ -105,7 +109,9 @@ class GridSearch:
                 best_params = parameters
                 best_history = histories
 
-        return best_scores, best_model, best_params, best_history
+        # Sort by increasing validation loss
+        top5 = sorted(top5, key=lambda e: e[0][1][0][repr(model.get_loss())])[:5]
+        return best_scores, best_model, best_params, best_history, top5
 
 
 class RandomGridSearch(GridSearch):

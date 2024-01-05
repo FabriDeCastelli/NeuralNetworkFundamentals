@@ -292,5 +292,5 @@ class Model:
         :param batch_size: the batch size used for training
         """
         model_dict = self.to_dict(epochs=epochs, batch_size=batch_size)
-        with open(path, "w+") as file:
+        with open(path, "w") as file:
             json.dump(model_dict, file, indent=4)

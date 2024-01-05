@@ -27,10 +27,13 @@ def holdout_CV(X: np.ndarray,
     X, y = shuffle_data(X, y)
     x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=split, random_state=1)
 
-    ((train_mean, train_std), (val_mean, val_std)), model, params, histories = grid_search.run_search(x_train, y_train, verbose=verbose)
+    ((train_mean, train_std), (val_mean, val_std)), model, params, histories, top5 = (
+        grid_search.run_search(x_train, y_train, verbose=verbose)
+    )
+
     test_score = model.evaluate(x_test, y_test)
 
     for key in test_score.keys():
         test_std[key] = 0.0
 
-    return train_mean, train_std, val_mean, val_std, test_score, test_std, model, params, histories
+    return train_mean, train_std, val_mean, val_std, test_score, test_std, model, params, histories, top5
