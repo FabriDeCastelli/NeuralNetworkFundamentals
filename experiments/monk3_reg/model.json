@@ -1,0 +1,32 @@
+{
+    "optimizer": {
+        "Learning Rate": 0.45,
+        "Momentum": 0.8
+    },
+    "batch_size": 109,
+    "epochs": 350,
+    "loss": "mean_squared_error",
+    "metrics": [
+        "binary_accuracy"
+    ],
+    "callback": "None",
+    "regularizer": {
+        "l2": 0.0007
+    },
+    "layers": [
+        {
+            "input_size": 17,
+            "output_size": 4,
+            "weights_initializer": "GlorotUniform",
+            "bias_initializer": "Zeros",
+            "activation": "ReLu"
+        },
+        {
+            "input_size": 4,
+            "output_size": 1,
+            "weights_initializer": "GlorotUniform",
+            "bias_initializer": "Zeros",
+            "activation": "Sigmoid"
+        }
+    ]
+}

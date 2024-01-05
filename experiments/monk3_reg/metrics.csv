@@ -1,0 +1,7 @@
+Metrics,Set,Mean,Std
+binary_accuracy,Training,"0,945","0,0"
+binary_accuracy,Validation,"1,0","0,0"
+binary_accuracy,Test,"0,9398","0,0"
+mean_squared_error,Training,"0,0532","0,0"
+mean_squared_error,Validation,"0,0241","0,0"
+mean_squared_error,Test,"0,034","0,0"
