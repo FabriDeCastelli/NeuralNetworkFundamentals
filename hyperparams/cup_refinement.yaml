@@ -1,0 +1,26 @@
+units: [
+  [10, 50, 25, 3],
+  [10, 128, 64, 3],
+  [10, 64, 32, 3],
+  [10, 32, 16, 3],
+]
+activations: [
+  ['relu', 'relu', 'identity'],
+  ['relu', 'tanh', 'identity'],
+  ['relu', 'sigmoid', 'identity'],
+]
+weight_initializer: ['glorot_uniform', 'random_normal']
+bias_initializer: ['zeros']
+learning_rate: [0.001, 0.0005, 0.000575, 0.0006, 0.000625, 0.0007]
+momentum: [0.7, 0.73, 0.75, 0.77, 0.8]
+loss: ['mean_squared_error']
+metrics: [['root_mean_squared_error', 'mean_euclidean_error']]
+epochs: [7000]
+batch_size: [12, 8]
+regularizer: ['l2']
+lambd: [0.0, 0.000005, 0.00001]
+start_from_epoch: [3000]
+patience: [50]
+delta: [0.001, 0.002]
+monitor: ['mean_squared_error']
+restore_best_weights: [True]

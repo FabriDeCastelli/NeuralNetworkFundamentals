@@ -1,0 +1,10 @@
+Metrics,Set,Mean,Std
+root_mean_squared_error,Training,"0,2657","0,0156"
+root_mean_squared_error,Validation,"0,8133","0,1744"
+root_mean_squared_error,Test,"0,0","0,0"
+mean_euclidean_error,Training,"0,2406","0,0149"
+mean_euclidean_error,Validation,"0,588","0,0746"
+mean_euclidean_error,Test,"0,0","0,0"
+mean_squared_error,Training,"0,0709","0,0085"
+mean_squared_error,Validation,"0,6919","0,3173"
+mean_squared_error,Test,"0,0","0,0"

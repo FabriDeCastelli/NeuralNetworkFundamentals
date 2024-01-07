@@ -76,7 +76,7 @@ def create_model(
     sgd = SGD(learning_rate, momentum)
     regularizer = regularizer_dict.get(regularizer)
 
-    if regularizer:
+    if regularizer is not None:
         regularizer.set_lambda(lambd)
 
     if patience is not None:

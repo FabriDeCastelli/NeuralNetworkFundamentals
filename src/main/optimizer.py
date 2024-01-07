@@ -75,6 +75,7 @@ class SGD(Optimizer):
 
         if regularizer is not None:
             dW += regularizer.backward(layer.get_weights())
+            # db += regularizer.backward(layer.get_bias())
 
         if self.momentum > 0:
             dW += self.momentum * layer.get_dW()

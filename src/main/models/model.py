@@ -243,7 +243,8 @@ class Model:
         """
         Reset the model to the initial state.
         """
-        self.callback.reset()
+        if self.callback is not None:
+            self.callback.reset()
         for layer in self.layers:
             layer.reset()
 

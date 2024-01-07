@@ -1,7 +1,5 @@
-import json
-
 from src.main.evaluation.holdout_CV import holdout_CV
-from src.main.evaluation.grid_search import GridSearch
+from src.main.evaluation.grid_search import RandomGridSearch
 from src.main.utilities.utils import load_hparams, setup_experiment, log_experiment, predictions_to_csv
 from src.main.utilities.dataset_handler import get_cup_dataset
 
@@ -13,15 +11,15 @@ def print_score(mean, std):
 
 x_train, y_train, x_test = get_cup_dataset()
 
-hyperparameters = load_hparams("cup")
-grid_search = GridSearch(hyperparameters)
+hyperparameters = load_hparams("cup_refinement")
+grid_search = RandomGridSearch(hyperparameters, 70)
 train_mean, train_std, val_mean, val_std, test_mean, test_std, model, (epochs, batch_size), histories, top5 = (
     holdout_CV(x_train, y_train, grid_search, verbose=False)
 )
 
 
 for (i, best_result) in enumerate(top5):
-    exp_dir = setup_experiment(f"cup_submission/top5/{i+1}")
+    exp_dir = setup_experiment(f"cup_submission_refinement/top5/{i+1}")
     ((train_score, train_std), (val_score, val_std)) = best_result[0]
     model = best_result[1]
     epochs = best_result[2][0]
@@ -37,7 +35,7 @@ for (i, best_result) in enumerate(top5):
         train_score, train_std, val_score, val_std, t_score, t_std, None
     )
 
-exp_dir = setup_experiment("cup_submission")
+exp_dir = setup_experiment("cup_submission_refinement")
 
 
 log_experiment(
@@ -48,7 +46,8 @@ log_experiment(
 
 
 predictions = model.predict(x_test)
-predictions_to_csv(predictions)
+predictions_to_csv(predictions, filename="Martiri_della_mensa_ML-CUP-23-TS-refinement.csv")
+
 
 print("------ Train scores: ------ ")
 print_score(train_mean, train_std)

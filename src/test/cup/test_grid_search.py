@@ -8,10 +8,10 @@ x_train, y_train, _ = get_cup_dataset()
 x_train, x_test, y_train, y_test = train_test_split(x_train, y_train, test_size=0.1, random_state=42)
 
 hyperparameters = load_hparams("cup")
-grid_search = RandomGridSearch(hyperparameters)
+grid_search = RandomGridSearch(hyperparameters, 50)
 
-((train_mean, train_std), (val_mean, val_std)), model, params, histories = (
-    grid_search.run_search(x_train, y_train, True, combinations=50)
+((train_mean, train_std), (val_mean, val_std)), model, params, histories, top5 = (
+    grid_search.run_search(x_train, y_train, True)
 )
 epoch, batch_size = params
 

@@ -30,7 +30,8 @@ class GridSearch:
         # remove the combinations from keys and values
         keys = keys[:-1]
         values = values[:-1]
-        return [dict(zip(keys, v)) for v in itertools.product(*values)]
+        result = [dict(zip(keys, v)) for v in itertools.product(*values)]
+        return list(filter(lambda x: len(x['units']) - 1 == len(x['activations']), result))
 
     def run_search(self, x, y, kfold=True, verbose=False):
         """

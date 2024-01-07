@@ -1,0 +1,46 @@
+{
+    "optimizer": {
+        "Learning Rate": 0.000575,
+        "Momentum": 0.75
+    },
+    "batch_size": 8,
+    "epochs": 7000,
+    "loss": "mean_squared_error",
+    "metrics": [
+        "root_mean_squared_error",
+        "mean_euclidean_error"
+    ],
+    "callback": {
+        "Patience": 40,
+        "Start From Epoch": 3000,
+        "Delta": 0.0005,
+        "Monitor": "mean_squared_error",
+        "Restore Best Weights": true
+    },
+    "regularizer": {
+        "l2": 5e-06
+    },
+    "layers": [
+        {
+            "input_size": 10,
+            "output_size": 128,
+            "weights_initializer": "GlorotUniform",
+            "bias_initializer": "Zeros",
+            "activation": "ReLu"
+        },
+        {
+            "input_size": 128,
+            "output_size": 64,
+            "weights_initializer": "GlorotUniform",
+            "bias_initializer": "Zeros",
+            "activation": "Tanh"
+        },
+        {
+            "input_size": 64,
+            "output_size": 3,
+            "weights_initializer": "GlorotUniform",
+            "bias_initializer": "Zeros",
+            "activation": "Identity"
+        }
+    ]
+}

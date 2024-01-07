@@ -58,34 +58,32 @@ class EarlyStopping(Callback):
 
     def check_stop(self):
         """
-        check if the training should be stopped
+        Checks if the training should be stopped
         
         :return: True if the training should be stopped, False otherwise
         """
-
-        def check(lst, delta):
-            """
-            Checks if all elements in the list are different by at most delta.
-
-            :param lst: the list to check
-            :param delta: the maximum allowed difference between elements
-            :return: True if all elements are different by at most delta, False otherwise
-            """
-            if len(lst) in [0, 1]:
-                return False
-
-            lst = [x[self.monitor] for x in lst]
-            minimum, maximum = min(lst), max(lst)
-            return maximum - minimum <= delta
-
         if self.counter < self.star_from_epoch:
             return False
 
-        if check(self.val_history[-self.patience:], self.delta):
+        if self.check(self.val_history[-self.patience:], self.delta):
             if self.verbose and self.restore_best_weights:
                 print("Best model at iter: ", self.best_iter_model)
             return True
         return False
+
+    def check(self, lst, delta):
+        """
+        Checks if all elements in the list are different by at most delta.
+
+        :param lst: the list to check
+        :param delta: the maximum allowed difference between elements
+        :return: True if all elements are different by at most delta, False otherwise
+        """
+        if len(lst) == 1:
+            return False
+        lst = [x[self.monitor] for x in lst]
+        minimum, maximum = min(lst), max(lst)
+        return maximum - minimum <= delta
 
     def update_best_model(self, model, val_score: dict):
         """
