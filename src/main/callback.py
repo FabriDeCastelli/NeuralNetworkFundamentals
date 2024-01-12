@@ -13,14 +13,23 @@ class Callback:
     def __repr__(self):
         raise NotImplementedError()
 
+    def __call__(self, *args, **kwargs):
+        raise NotImplementedError()
+
 
 class EarlyStopping(Callback):
     """
     early stopping callback used to stop the training when the validation loss stops improving
     """
 
-    def __init__(self, patience: int = 5, start_from_epoch: int = 100, delta: float = 0.001,
-                 monitor: str | Metric | Loss = 'loss', restore_best_weights: bool = False, verbose: bool = False):
+    def __init__(self,
+                 patience: int = 5,
+                 start_from_epoch: int = 100,
+                 delta: float = 0.0001,
+                 monitor: str = None,
+                 restore_best_weights: bool = False,
+                 verbose: bool = True
+                 ):
         """
         :param patience: the number of epochs with no improvement before stopping the training
         :param start_from_epoch: the number of epochs to wait before stopping the training
@@ -29,23 +38,56 @@ class EarlyStopping(Callback):
         :param restore_best_weights: whether to restore model weights from the epoch with the best value of the monitored metric
         """
         super().__init__()
+
         self.patience = patience
-        self.star_from_epoch = start_from_epoch
+        self.start_from_epoch = start_from_epoch
         self.delta = delta
         self.monitor = monitor
         self.restore_best_weights = restore_best_weights
         self.verbose = verbose
 
+        self.compare_op = lambda a, b: a - b <= self.delta
+        if self.monitor in metrics_map['maximize']:
+            self.compare_op = lambda a, b: a - b >= self.delta
+
         self.counter = 0
-        self.val_history = []
         self.best_model = None
         self.best_iter_model = 0
+        self.best_score = {}
+        self.not_improved_count = 0
 
-    def get_counter(self):
-        return self.counter
+    def __call__(self, model, val_score: dict):
+        """
+        Implementation of Early Stopping logic
 
-    def increment_counter(self):
+        :param model: the model to check if it is the best model
+        :param val_score: the new validation score
+        """
+
+        if self.monitor is None:
+            raise ValueError("The monitor metric must be defined")
+
         self.counter += 1
+
+        if self.counter < self.start_from_epoch:
+            return
+
+        if self.counter == self.start_from_epoch:
+            self.best_score = val_score
+            self.update_best_model(model)
+            return
+
+        if self.compare_op(val_score[self.monitor], self.best_score[self.monitor]):
+            self.best_score = val_score
+            self.not_improved_count = 0
+            self.update_best_model(model)
+        else:
+            self.not_improved_count += 1
+
+        if self.not_improved_count >= self.patience:
+            if self.verbose:
+                print("Early stopping at epoch {}".format(self.counter))
+            raise StopIteration()
 
     def get_best_model(self):
         return self.best_model
@@ -53,76 +95,26 @@ class EarlyStopping(Callback):
     def get_restore_best_weights(self):
         return self.restore_best_weights
 
-    def get_best_iter_model(self):
-        return self.best_iter_model
-
-    def check_stop(self):
-        """
-        Checks if the training should be stopped
-        
-        :return: True if the training should be stopped, False otherwise
-        """
-        if self.counter < self.star_from_epoch:
-            return False
-
-        if self.check(self.val_history[-self.patience:], self.delta):
-            if self.verbose and self.restore_best_weights:
-                print("Best model at iter: ", self.best_iter_model)
-            return True
-        return False
-
-    def check(self, lst, delta):
-        """
-        Checks if all elements in the list are different by at most delta.
-
-        :param lst: the list to check
-        :param delta: the maximum allowed difference between elements
-        :return: True if all elements are different by at most delta, False otherwise
-        """
-        if len(lst) == 1:
-            return False
-        lst = [x[self.monitor] for x in lst]
-        minimum, maximum = min(lst), max(lst)
-        return maximum - minimum <= delta
-
-    def update_best_model(self, model, val_score: dict):
+    def update_best_model(self, model):
         """
         update best model
         
         :param model: the model to check if it is the best model
-        :param val_score: the new validation score
         """
-        if self.best_model is None:
-            self.best_model = model
-            self.best_iter_model = self.counter
 
-        elif (val_score[self.monitor] < self.val_history[-1][self.monitor] and
-              (self.monitor in metrics_map["minimize"] or self.monitor in loss_map["minimize"])):
-            self.best_model = model
-            self.best_iter_model = self.counter
-
-        elif (val_score[self.monitor] > self.val_history[-1][self.monitor] and
-              self.monitor in metrics_map["maximize"]):
-            self.best_model = model
-            self.best_iter_model = self.counter
-
-    def update_val_history(self, val_score: dict):
-        """
-        update the validation history with the new validation score and store the best model
-
-        :param val_score: the new validation score
-        """
-        self.val_history.append(val_score)
+        self.best_model = model
+        self.best_iter_model = self.counter
 
     def reset(self):
         """
-        reset the object to the initial state
+        Resets the object to the initial state.
         """
 
         self.counter = 0
-        self.val_history = []
+        self.best_score = {}
         self.best_model = None
         self.best_iter_model = 0
+        self.not_improved_count = 0
 
     def __repr__(self):
         return "Early Stopping"
@@ -130,7 +122,7 @@ class EarlyStopping(Callback):
     def to_dict(self):
         return {
             "Patience": self.patience,
-            "Start From Epoch": self.star_from_epoch,
+            "Start From Epoch": self.start_from_epoch,
             "Delta": self.delta,
             "Monitor": self.monitor,
             "Restore Best Weights": self.restore_best_weights

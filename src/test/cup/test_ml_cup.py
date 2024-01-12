@@ -36,31 +36,3 @@ plot_history(history)
 errors = model.evaluate(x_test, y_test)
 print(errors)
 
-
-# --------- Keras ------------
-from keras.models import Sequential
-from keras.layers import Dense
-from keras.optimizers.legacy import SGD
-
-model = Sequential()
-model.add(Dense(64, input_dim=10, activation='relu'))
-model.add(Dense(32, activation='relu'))
-model.add(Dense(16, activation='relu'))
-model.add(Dense(3))
-
-
-def mean_euclidean_error(y_true, y_pred):
-    return tf.reduce_mean(tf.norm(y_true - y_pred, axis=1))
-
-
-sgd = SGD(learning_rate=0.0005, momentum=0.75)
-
-model.compile(loss="mean_squared_error", optimizer=sgd,  metrics=['RootMeanSquaredError', mean_euclidean_error])
-
-# model.fit(x_train, y_train, epochs=12000, batch_size=12, verbose=0)
-
-# model.summary()
-
-errors = model.evaluate(x_test, y_test)
-print(errors)
-

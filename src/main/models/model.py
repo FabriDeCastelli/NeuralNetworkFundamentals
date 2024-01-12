@@ -124,23 +124,18 @@ class Model:
                 val_score = self.evaluate(x_val, y_val)
                 validation_scores.append(val_score)
 
-            # early stopping logic
-            if self.callback is not None and x_val is not None:
-
-                self.callback.increment_counter()
-                if self.callback.get_restore_best_weights():
-                    self.callback.update_best_model(self, val_score)
-                self.callback.update_val_history(val_score)
-
-                if self.callback.check_stop():
-                    print("Early Stopping Triggered at iter: ", self.callback.get_counter())
-                    # self.callback.reset()
-                    break
-
             if verbose and epoch % 50 == 0:
                 print(f"Epoch {epoch + 1}/{epochs} \tTraining - {self.evaluate(x_train, y_train)}")
                 if x_val is not None:
                     print(f"\t\tValidation - {self.evaluate(x_val, y_val)}")
+
+            # early stopping logic
+            if self.callback is not None and x_val is not None:
+
+                try:
+                    self.callback(self, val_score)
+                except StopIteration:
+                    break
 
         def convert_history_format(history):
             result = {}
@@ -200,7 +195,7 @@ class Model:
 
         return x
 
-    def backward(self, delta: np.ndarray) -> np.ndarray:
+    def backward(self, delta: np.ndarray):
         """
         Performs a backward pass of the model, by calling the backward method of each layer.
 
