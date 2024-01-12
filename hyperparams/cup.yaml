@@ -1,7 +1,6 @@
 units: [
   [10, 50, 25, 3],
   [10, 128, 64, 3],
-  [10, 64, 32, 16, 3],
   [10, 16, 32, 16, 3],
 ]
 activations: [
@@ -12,16 +11,17 @@ activations: [
 ]
 weight_initializer: ['glorot_uniform', 'random_normal']
 bias_initializer: ['zeros']
-learning_rate: [0.000575, 0.0006, 0.000625]
-momentum: [0.65, 0.73, 0.75, 0.77, 0.85]
+learning_rate: [0.001, 0.0001, 0.00005]
+momentum: [0.5, 0.6, 0.7, 0.75, 0.85]
 loss: ['mean_squared_error']
 metrics: [['root_mean_squared_error', 'mean_euclidean_error']]
-epochs: [7000]
-batch_size: [12, 8]
-regularizer: ['l2']
-lambd: [0.0, 0.000005, 0.00001, 0.00003, 0.0001, 0.00007]
-start_from_epoch: [3000]
-patience: [40, 50]
-delta: [0.001, 0.0005, 0.002]
+epochs: [5000, 10000, 15000, 20000]
+batch_size: [8, 12, 16, 20]
+regularizer: ['l1', 'l2']
+lambd: [0.0, 0.0005, 0.0001, 0.00001, 0.000005]
+early_stopping: [True, False]
+start_from_epoch: [3000, 5000]
+patience: [20, 40, 50]
+delta: [0.0001, 0.0005, 0.00001]
 monitor: ['mean_squared_error']
 restore_best_weights: [True, False]

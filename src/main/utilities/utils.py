@@ -53,6 +53,7 @@ def create_model(
         loss: str,
         metrics: list[str],
         restore_best_weights: bool = None,
+        early_stopping: bool = False,
         monitor: str = None,
         delta: float = None,
         start_from_epoch: int = None,
@@ -79,10 +80,10 @@ def create_model(
     if regularizer is not None:
         regularizer.set_lambda(lambd)
 
-    if patience is not None:
+    callback = None
+    if early_stopping:
         callback = EarlyStopping(patience, start_from_epoch, delta, monitor, restore_best_weights)
-    else:
-        callback = None
+
     model.compile(sgd, loss, metrics, callback, regularizer)
 
     return model

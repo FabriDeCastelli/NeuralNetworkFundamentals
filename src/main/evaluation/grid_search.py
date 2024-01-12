@@ -97,12 +97,9 @@ class GridSearch:
         top5 = []
 
         for i, (res, model, parameters) in enumerate(results):
-            epochs = parameters[0]
-            batch_size = parameters[1]
             result, histories = res
-            plot_history(histories[0])
             mean_val = result[1][0][repr(model.get_loss())]
-            top5.append((result, model, (epochs, batch_size)))
+            top5.append((result, model, parameters))
             if mean_val < best_val_loss:
                 best_val_loss = mean_val
                 best_scores = result
