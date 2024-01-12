@@ -6,6 +6,7 @@ units: [
 activations: [
   ['relu', 'relu', 'identity'],
   ['relu', 'tanh', 'identity'],
+  [ 'relu', 'sigmoid', 'identity' ],
   ['relu', 'relu', 'relu', 'identity'],
   ['relu', 'relu', 'tanh', 'identity'],
 ]
@@ -24,4 +25,4 @@ start_from_epoch: [3000, 5000]
 patience: [20, 40, 50]
 delta: [0.0001, 0.0005, 0.00001]
 monitor: ['mean_squared_error']
-restore_best_weights: [True, False]
+restore_best_weights: [True]
