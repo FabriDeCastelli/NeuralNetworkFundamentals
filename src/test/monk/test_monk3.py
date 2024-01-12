@@ -42,7 +42,7 @@ print(val_score)
 print("------ Test scores: ------ ")
 print(test_score)
 
-"""MONK 3 WITH REGULARIZATION"""
+"""MONK 3 WITH REGULARIZATION
 
 from sklearn.model_selection import train_test_split
 from src.main.utilities.dataset_handler import get_monk
@@ -92,3 +92,4 @@ print(test_score)
 log_experiment(setup_experiment("monk3_reg_2"),model, epochs, batch_size,train_score, train_std, val_score, val_std, test_score, test_std, [history])
 
 
+"""
