@@ -1,0 +1,5 @@
+The project involves creating an Artificial Neural Network with Python, without relying on pre-built libraries.
+The validation process includes an initial screening phase to narrow down the hypothesis search space.
+This is followed by two random grid-search phases: a coarser one and a finer one to find the best model.
+All the explored models are validated with a 7-fold cross-validation approach.
+The most performant model found has 2-hidden layers with respectively 164 and 82 units. Its training is monitored via early stopping.
