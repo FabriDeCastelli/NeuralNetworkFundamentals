@@ -1,6 +1,8 @@
 import numpy as np
 
-from src.main.utilities.utils import predictions_to_csv
+from src.main.utilities.utils import plot_metrics_histogram
 
-predictions = np.array([[1, 2, 3], [4, 5, 6]])
-predictions_to_csv(predictions, "abc.csv")
+if __name__ == '__main__':
+    plot_metrics_histogram("cup_submission", "cup_submission_refinement", "Validation")
+    plot_metrics_histogram("cup_submission", "cup_submission_refinement", "Test")
+    plot_metrics_histogram("cup_submission", "cup_submission_refinement", "Training")

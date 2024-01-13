@@ -4,6 +4,8 @@ MONK_BENCHMARK_PATH = "/data_for_testing/monk/monk-{}"
 ML_CUP_PATH = "/data_for_testing/cup"
 HPARAMS_ROOT = "/hyperparams/{}.yaml"
 RESULTS_PATH = "/results"
+EXPERIMENTS_PATH = "/experiments"
+PLOTS_PATH = "/plots"
 
 # PROJECT FOLDER PATH
 PROJECT_FOLDER_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -19,4 +21,10 @@ HPARAMS_ROOT = PROJECT_FOLDER_PATH + HPARAMS_ROOT
 
 # RESULTS PATH
 RESULTS_PATH = PROJECT_FOLDER_PATH + RESULTS_PATH
+
+# EXPERIMENTS PATH
+EXPERIMENTS_PATH = PROJECT_FOLDER_PATH + EXPERIMENTS_PATH
+
+# PLOTS PATH
+PLOTS_PATH = PROJECT_FOLDER_PATH + PLOTS_PATH
 

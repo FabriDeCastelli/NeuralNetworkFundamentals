@@ -8,7 +8,7 @@ import pandas as pd
 from matplotlib import pyplot as plt
 import seaborn as sns
 
-from config.config import HPARAMS_ROOT, PROJECT_FOLDER_PATH, RESULTS_PATH
+from config.config import HPARAMS_ROOT, PROJECT_FOLDER_PATH, RESULTS_PATH, EXPERIMENTS_PATH, PLOTS_PATH
 from src.main.callback import EarlyStopping
 from src.main.initializer import Initializer
 from src.main.models.layers.dense import Dense
@@ -238,3 +238,58 @@ def plot_history(history, exp_dir=None):
         if exp_dir is not None:
             plt.savefig(exp_dir / f'{metric}.pdf')
         # plt.show()
+
+
+def plot_metrics_histogram(no_refinement_folder, refinement_folder, set_name):
+    assert set_name in ["Training", "Validation", "Test"]
+
+    path1 = EXPERIMENTS_PATH + "/" + no_refinement_folder + "/metrics.csv"
+    path2 = EXPERIMENTS_PATH + "/" + refinement_folder + "/metrics.csv"
+
+    df1 = pd.read_csv(path1)
+    df2 = pd.read_csv(path2)
+
+    df1 = df1[df1['Set'] == set_name]
+    df2 = df2[df2['Set'] == set_name]
+
+    df1 = df1.drop(columns=['Set'])
+    df2 = df2.drop(columns=['Set'])
+
+    # add model name to df1 and df2
+    df1['Model'] = "Coarse"
+    df2['Model'] = "Fine"
+
+    # merge df1 and df2
+    merged_df = pd.concat([df1, df2])
+
+    merged_df['Mean'] = merged_df['Mean'].str.replace(',', '.').astype(float)
+    merged_df['Std'] = merged_df['Std'].str.replace(',', '.').astype(float)
+    merged_df['Metrics'] = merged_df['Metrics'].str.replace('_', ' ').str.capitalize()
+
+    sns.set_context("notebook")
+    sns.set_theme(style="whitegrid")
+
+    plt.figure(figsize=(12, 6))
+    sns.barplot(x='Metrics', y='Mean', hue="Model", data=merged_df, palette='bright')
+
+    for i, model in enumerate(merged_df["Model"].unique()):
+        for j, metric in enumerate(merged_df["Metrics"].unique()):
+            subset = merged_df[(merged_df["Model"] == model) & (merged_df["Metrics"] == metric)]
+            value = subset["Mean"].values[0]
+            variance = subset["Std"].values[0]
+            offset = - 0.2 if model == "Coarse" else 0.2
+
+            plt.errorbar(
+                x=j + offset,
+                y=value,
+                yerr=variance,
+                color='black',
+                capsize=5,
+                fmt="none",
+            )
+
+    plt.title(f'Model comparison on {set_name} Set')
+    plt.xlabel('Metric')
+    plt.legend()
+    plt.savefig(PLOTS_PATH + f"/{set_name}_metrics.pdf")
+    plt.show()
