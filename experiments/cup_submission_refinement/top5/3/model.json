@@ -1,42 +1,36 @@
 {
     "optimizer": {
-        "Learning Rate": 0.000625,
-        "Momentum": 0.7
+        "Learning Rate": 0.0008,
+        "Momentum": 0.75
     },
-    "batch_size": 8,
-    "epochs": 7000,
+    "batch_size": 14,
+    "epochs": 15000,
     "loss": "mean_squared_error",
     "metrics": [
         "root_mean_squared_error",
         "mean_euclidean_error"
     ],
-    "callback": {
-        "Patience": 50,
-        "Start From Epoch": 3000,
-        "Delta": 0.001,
-        "Monitor": "mean_squared_error",
-        "Restore Best Weights": true
-    },
+    "callback": "None",
     "regularizer": {
         "l2": 0.0
     },
     "layers": [
         {
             "input_size": 10,
-            "output_size": 128,
+            "output_size": 164,
             "weights_initializer": "GlorotUniform",
             "bias_initializer": "Zeros",
             "activation": "ReLu"
         },
         {
-            "input_size": 128,
-            "output_size": 64,
+            "input_size": 164,
+            "output_size": 82,
             "weights_initializer": "GlorotUniform",
             "bias_initializer": "Zeros",
             "activation": "Tanh"
         },
         {
-            "input_size": 64,
+            "input_size": 82,
             "output_size": 3,
             "weights_initializer": "GlorotUniform",
             "bias_initializer": "Zeros",
