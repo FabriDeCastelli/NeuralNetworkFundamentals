@@ -22,19 +22,18 @@ x_train, x_test, y_train, y_test = train_test_split(x_train, y_train, test_size=
 # --------- Our implementation ------------
 
 model = Model()
-model.add(Dense(10, 64, activation="relu"))
-model.add(Dense(64, 32, activation="relu"))
-model.add(Dense(32, 16, activation="relu"))
-model.add(Dense(16, 3))
+model.add(Dense(10, 164, activation="relu"))
+model.add(Dense(164, 82, activation="tanh"))
+model.add(Dense(82, 3))
 
-optimizer = SGD(learning_rate=0.0006, momentum=0.75)
+optimizer = SGD(learning_rate=0.0006, momentum=0.73)
 model.compile(optimizer=optimizer, loss='mean_squared_error', metrics=['root_mean_squared_error', 'mean_euclidean_error'])
 
 
 now = tf.timestamp()
 for i in range(num_redo):
 
-    model, history = model.fit(x_train, y_train, x_test, y_test, epochs=5000, batch_size=12, verbose=False)
+    model, history = model.fit(x_train, y_train, x_test, y_test, epochs=5000, batch_size=14, verbose=False)
     model.reset()
 
 now = (tf.timestamp() - now).numpy()

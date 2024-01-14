@@ -135,7 +135,7 @@ def predictions_to_csv(predictions, filename="Martiri_della_mensa_ML-CUP-23-TS.c
 
     with open(filename, "w+", newline='') as file:
         file.write("#Francesco Aliprandi, Fabrizio De Castelli\n")
-        file.write("#Martiri della Mensa\n")
+        file.write("#Chiaccheroni\n")
         file.write("#ML-CUP23\n")
         file.write("#" + today.strftime("%d/%m/%Y") + "\n")
         ids = np.arange(1, n_data + 1).reshape(-1, 1).astype(int)
