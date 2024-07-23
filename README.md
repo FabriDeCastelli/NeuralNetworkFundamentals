@@ -1,2 +1,9 @@
-# ML_Project-2023-24
-A neural network from scratch using python
+# FromScratchToNeuralNet
+
+A neural network implementation from scratch using Python, without pre-built libraries or frameworks. This project aims to build a neural network framework inspired by the [Keras API](https://keras.io/api/), focusing on core concepts and hands-on understanding.
+
+## Project Overview
+
+This repository contains a Python implementation of a neural network framework built from the ground up. The goal is to understand the underlying mechanics of neural networks by manually implementing key components such as layers, activation functions, optimizers, and loss functions. The architectural design is inspired by the Keras API to provide an intuitive and modular approach. 
+
+This project concerns validation techniques that were used on real regression data as a way of testing the correctness of the implementation.
