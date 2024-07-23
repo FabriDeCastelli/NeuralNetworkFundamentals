@@ -1,4 +1,4 @@
-# FromScratchToNeuralNet
+# NeuralNetworkFundamentals
 
 A neural network implementation from scratch using Python, without pre-built libraries or frameworks. This project aims to build a neural network framework inspired by the [Keras API](https://keras.io/api/), focusing on core concepts and hands-on understanding.
 
